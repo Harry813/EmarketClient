@@ -3,8 +3,6 @@ import os
 
 import requests as rq
 
-from kernel.models import *
-
 
 def send_request(url, method, data=None, headers=None):
     """
