@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'client/img/favicon.ico' %}">
+
+    <!-- CSS
+    ========================= -->
+
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="{% static 'client/css/plugins.css' %}">
+
+    <!-- Main Style CSS -->
+    <link rel="stylesheet" href="{% static 'client/css/style.css' %}">
+
+    <!--modernizr min js here-->
+    <script src="{% static 'client/js/vendor/modernizr-3.7.1.min.js' %}"></script>
+</head>
+<body>
+{% block body %}
+{% endblock %}
+
+{% block js %}
+{% endblock %}
+<!-- Plugins JS -->
+<script src="{% static 'client/js/vendor/jquery-3.4.1.min.js' %}"></script>
+<script src="{% static 'client/js/popper.js' %}"></script>
+<script src="{% static 'client/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'client/js/plugins.js' %}"></script>
+<script src="{% static 'client/js/owl.carousel.main.js' %}"></script>
+<script src="{% static 'client/js/jquery.nice.select.js' %}"></script>
+<script src="{% static 'client/js/scrollup.js' %}"></script>
+<script src="{% static 'client/js/ajax.chimp.js' %}"></script>
+<script src="{% static 'client/js/jquery.ui.js' %}"></script>
+<script src="{% static 'client/js/jquery.elevatezoom.js' %}"></script>
+<script src="{% static 'client/js/imagesloaded.js' %}"></script>
+<script src="{% static 'client/js/isotope.main.js' %}"></script>
+<script src="{% static 'client/js/jqquery.ripples.js' %}"></script>
+<script src="{% static 'client/js/jquery.cookie.js' %}"></script>
+<script src="{% static 'client/js/bpopup.js' %}"></script>
+
+<!-- Main JS -->
+<script src="{% static 'client/js/main.js' %}"></script>
+</body>
+</html>
