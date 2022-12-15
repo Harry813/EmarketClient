@@ -2,6 +2,7 @@ import json
 import os
 
 import requests as rq
+from .models import *
 
 
 def send_request(url, method, data=None, headers=None):
@@ -12,10 +13,13 @@ def send_request(url, method, data=None, headers=None):
     :param data: data to send in format of dictionary, required by POST and PUT
     :param headers: headers to send
     """
+    if headers is None:
+        headers = {}
     headers = {
         "X-Api-Key": os.getenv("API_KEY"),
         **headers
     }
+
     url = f"{os.getenv('API_ROOT')}{url}"
     data = json.dumps(data)
 
