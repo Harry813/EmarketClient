@@ -7,7 +7,7 @@ from EmarketClient import settings
 from .models import *
 
 
-def send_request(url, method, data=None, headers=None):
+def send_request (url, method, data=None, headers=None):
     """
     Send request to url
     :param url: url path to send request (e.g. /path/to/api)
