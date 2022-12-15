@@ -2,6 +2,8 @@ import json
 import os
 
 import requests as rq
+
+from EmarketClient import settings
 from .models import *
 
 
@@ -20,7 +22,7 @@ def send_request(url, method, data=None, headers=None):
         **headers
     }
 
-    url = f"{os.getenv('API_ROOT')}{url}"
+    url = f"{settings.API_ROOT}{url}"
     data = json.dumps(data)
 
     if method == "GET":
