@@ -64,11 +64,16 @@ def create_user(**kwargs):
         return None
 
 
-def v_record(requst):
-    data = {"ip": requst.META["REMOTE_ADDR"], "site": requst.META["SERVER_NAME"], "url": requst.path,
-            "useragent": requst.META["HTTP_USER_AGENT"]}
-    if requst.user.is_authenticated:
-        data["user"] = requst.user.pk
+def v_record (request):
+    data = {
+        "ip": request.META["REMOTE_ADDR"],
+        "site": request.META["SERVER_NAME"],
+        "url": request.path,
+        "useragent": request.META["HTTP_USER_AGENT"]
+    }
+    if request.user.is_authenticated:
+        data["user"] = request.user.pk
+
     UserVisitRecord.objects.create(
         ip=data["ip"],
         user_id=data["user"] if "user" in data else None,
