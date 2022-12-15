@@ -28,7 +28,8 @@ SECRET_KEY = 'django-insecure-k*c-&g8*3^_w)62am$ac&a=45m2$ii4di_8&89dc7j8k^%%_mc
 DEBUG = True
 
 ALLOWED_HOSTS = ['customer.hanxiaofei.me']
-CSRF_TRUSTED_ORIGINS = [f'https://customer.hanxiaofei.me/']
+CSRF_TRUSTED_ORIGINS = ['https://customer.hanxiaofei.me']
+AUTH_USER_MODEL = "kern.User"
 
 # Application definition
 
@@ -39,6 +40,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'kern',
+    'client',
+    'management'
 ]
 
 MIDDLEWARE = [
@@ -119,6 +124,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = 'media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
