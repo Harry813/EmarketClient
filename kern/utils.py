@@ -75,7 +75,13 @@ def v_record (request):
         data["user"] = request.user.pk
 
     UserVisitRecord.objects.create(
-        ip=data["ip"],
-        user_id=data["user"] if "user" in data else None,
-        site=data["site"],
+        ip=request.META["REMOTE_ADDR"],
+        user=request.user if request.user.is_authenticated else None,
+        site=request.META["SERVER_NAME"],
+        path=request.path,
+        useragent=request.META["HTTP_USER_AGENT"],
+        query_string=request.META["QUERY_STRING"],
+        method=request.method,
+        referer=request.META["HTTP_REFERER"] if "HTTP_REFERER" in request.META else None,
+
     )
