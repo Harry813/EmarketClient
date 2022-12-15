@@ -56,6 +56,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'EmarketClient.backends.EmailAuthBackend.EmailAuthBackend',
+]
+
 ROOT_URLCONF = 'EmarketClient.urls'
 
 TEMPLATES = [
