@@ -24,7 +24,7 @@
             <div class="row">
                 <div class="col-md-6 offset-md-3">
                     <div class="account_form">
-                        <h2>login | 登录</h2>
+                        <h2>{% trans 'Login | 登录' %}</h2>
                         <form method="post">
                             {% csrf_token %}
                             <div>
@@ -34,12 +34,12 @@
                                         <span style="color: red">*</span>
                                     {% endif %}
                                 </label>
-                                {% render_field form.username %}
+                                {% render_field form.username class="form-control" %}
                                 <div>
                                     {% if form.username.errors %}
                                         <p style="color: red;">{{ form.username.errors.0 }}</p>
                                     {% elif form.username.help_text %}
-                                        <p>{{ form.username.help_text }}</p>
+                                        <p class="text-muted">{{ form.username.help_text }}</p>
                                     {% endif %}
                                 </div>
                             </div>
@@ -50,22 +50,24 @@
                                         <span style="color: red">*</span>
                                     {% endif %}
                                 </label>
-                                {% render_field form.password %}
+                                {% render_field form.password class="form-control" %}
                                 <div>
                                     {% if form.password.errors %}
                                         <p style="color: red;">{{ form.password.errors.0 }}</p>
                                     {% elif form.password.help_text %}
-                                        <p>{{ form.password.help_text }}</p>
+                                        <p class="text-muted">{{ form.password.help_text }}</p>
                                     {% endif %}
                                 </div>
                             </div>
+                            {% if form.errors %}
+                                <div>
+                                    <p class="form-text" style="color: red;">{{ form.errors.0 }}</p>
+                                </div>
+                            {% endif %}
                             <div class="login_submit">
                                 {# todo: 添加密码重置功能 #}
-                                <a href="#">{% trans "忘记密码？" %}</a>
-                                <label for="{{ form.remember_me.id_for_label }}">
-                                    <input id="{{ form.remember_me.id_for_label }}" type="checkbox">
-                                    {{ form.remember_me.label }}
-                                </label>
+                                <a href="#" style="margin-right: .5rem">{% trans "忘记密码？" %}</a><a
+                                    href="{% url 'client:register' %}">{% trans "前往注册" %}</a>
                                 <button type="submit">{% trans "登录" %}</button>
                             </div>
                         </form>
