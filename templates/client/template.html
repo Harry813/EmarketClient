@@ -37,10 +37,10 @@
                                             <li><a href="#">{% trans '资料' %}</a></li>
                                             <li><a href="#">{% trans '购物车' %}</a></li>
                                             <li><a href="#">{% trans '愿望单' %}</a></li>
-                                            <li><a href="#">{% trans '登出' %}</a></li>
+                                            <li><a href="{% url 'client:logout' %}">{% trans '登出' %}</a></li>
                                         {% else %}
                                             <li><a href="{% url 'client:login' %}">{% trans '登录' %}</a></li>
-                                            <li><a href="#">{% trans '注册' %}</a></li>
+                                            <li><a href="{% url 'client:register' %}">{% trans '注册' %}</a></li>
                                         {% endif %}
                                     </ul>
                                 </li>
@@ -162,7 +162,7 @@
                 <div class="row align-items-center">
                     <div class="col-lg-7 col-md-12">
                         <div class="welcome_text">
-                            <p>Free shipping on all domestic orders with coupon code <span>“Watches2018”</span></p>
+                            <p>{{ welcome_text|safe }}</p>
                         </div>
                     </div>
                     <div class="col-lg-5 col-md-12">
@@ -182,10 +182,10 @@
                                             <li><a href="#">{% trans '资料' %}</a></li>
                                             <li><a href="#">{% trans '购物车' %}</a></li>
                                             <li><a href="#">{% trans '愿望单' %}</a></li>
-                                            <li><a href="#">{% trans '登出' %}</a></li>
+                                            <li><a href="{% url 'client:logout' %}">{% trans '登出' %}</a></li>
                                         {% else %}
                                             <li><a href="{% url 'client:login' %}">{% trans '登录' %}</a></li>
-                                            <li><a href="#">{% trans '注册' %}</a></li>
+                                            <li><a href="{% url 'client:register' %}">{% trans '注册' %}</a></li>
                                         {% endif %}
                                     </ul>
                                 </li>
@@ -218,6 +218,7 @@
                                 </div>
                             </div>
                             <div class="cart_link">
+                                {# todo: 添加并修改购物车功能 #}
                                 <a href="#"><i class="ion-android-cart"></i><span
                                         class="cart_text_quantity"> $138.00</span> <i class="fa fa-angle-down"></i></a>
                                 <span class="cart_quantity">2</span>
