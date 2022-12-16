@@ -1,11 +1,14 @@
-from django.contrib.auth import authenticate, login
+import os
+
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from client.forms import LoginForm
+from client.forms import *
 from kern.utils import *
 
 
@@ -14,6 +17,7 @@ def index (request):
     params = {
         **get_client_params(),
     }
+    v_record(request)
     return render(request, 'client/index.html', params)
 
 
@@ -29,6 +33,7 @@ def login_view (request):
     param = {
         **get_client_params(),
     }
+    v_record(request)
     try:
         next_url = request.POST.get("next")
     except IndexError:
