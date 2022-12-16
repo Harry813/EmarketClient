@@ -15,7 +15,7 @@ from kern.utils import *
 # Create your views here.
 def index (request):
     params = {
-        **get_client_params(),
+        **get_client_params(page_title=_("首页")),
     }
     v_record(request)
     return render(request, 'client/index.html', params)
@@ -31,7 +31,7 @@ def test (request):
 
 def login_view (request):
     param = {
-        **get_client_params(),
+        **get_client_params(page_title=_("登录")),
     }
     v_record(request)
     try:
