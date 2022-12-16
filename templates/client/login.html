@@ -1,0 +1,77 @@
+{% extends 'client/template.html' %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <div class="breadcrumbs_area">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="breadcrumb_content">
+                        <h3>{% trans "我的账户" %}</h3>
+                        <ul>
+                            <li><a href="{% url 'client:index' %}">{% trans "首页" %}</a></li>
+                            <li>></li>
+                            <li>{% trans "我的账户" %}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="customer_login">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <div class="account_form">
+                        <h2>login | 登录</h2>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div>
+                                <label for="{{ form.username.id_for_label }}">
+                                    {{ form.username.label }}
+                                    {% if form.username.field.required %}
+                                        <span style="color: red">*</span>
+                                    {% endif %}
+                                </label>
+                                {% render_field form.username %}
+                                <div>
+                                    {% if form.username.errors %}
+                                        <p style="color: red;">{{ form.username.errors.0 }}</p>
+                                    {% elif form.username.help_text %}
+                                        <p>{{ form.username.help_text }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div>
+                                <label for="{{ form.password.id_for_label }}">
+                                    {{ form.password.label }}
+                                    {% if form.password.field.required %}
+                                        <span style="color: red">*</span>
+                                    {% endif %}
+                                </label>
+                                {% render_field form.password %}
+                                <div>
+                                    {% if form.password.errors %}
+                                        <p style="color: red;">{{ form.password.errors.0 }}</p>
+                                    {% elif form.password.help_text %}
+                                        <p>{{ form.password.help_text }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="login_submit">
+                                {# todo: 添加密码重置功能 #}
+                                <a href="#">{% trans "忘记密码？" %}</a>
+                                <label for="{{ form.remember_me.id_for_label }}">
+                                    <input id="{{ form.remember_me.id_for_label }}" type="checkbox">
+                                    {{ form.remember_me.label }}
+                                </label>
+                                <button type="submit">{% trans "登录" %}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
