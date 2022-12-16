@@ -23,7 +23,7 @@ def send_request (url, method, data=None, headers=None):
     }
 
     url = f"{settings.API_ROOT}{url}"
-    data = json.dumps(data)
+    # data = json.dumps(data)
 
     if method == "GET":
         return rq.get(url, headers=headers)
