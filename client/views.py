@@ -48,20 +48,12 @@ def login_view (request):
             username = form.cleaned_data.get("username")
             paswd = form.cleaned_data.get("password")
 
-            user = authenticate(
-                request=request,
-                username=username,
-                password=paswd
-            )
-            if user is not None:
-                if user.is_staff:
-                    login(request, user)
-                    if next_url:
-                        return HttpResponseRedirect(next_url)
-                    else:
-                        return redirect("client:index")
+            user = login_user(request=request, username=username, password=paswd)
+            if user:
+                if next_url:
+                    return HttpResponseRedirect(next_url)
                 else:
-                    raise PermissionDenied
+                    return redirect("client:index")
             else:
                 form.add_error(None, ValidationError(_("用户不存在"), code="UserNotExist"))
         else:
