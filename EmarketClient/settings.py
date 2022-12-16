@@ -59,7 +59,6 @@ MIDDLEWARE = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
     'EmarketClient.backends.EmailAuthBackend.EmailAuthBackend',
 ]
 
