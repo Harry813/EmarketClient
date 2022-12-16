@@ -67,6 +67,19 @@ def create_user(**kwargs):
         return None
 
 
+def login_user (request, username, password):
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        response = send_request("/auth/login/", "POST", {"id": str(user.uuid)})
+        if response.status_code == 200:
+            login(request, user)
+            return user
+        else:
+            return None
+    else:
+        return None
+
+
 def v_record (request):
     data = {
         "ip": request.META["REMOTE_ADDR"],
