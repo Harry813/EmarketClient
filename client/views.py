@@ -63,3 +63,39 @@ def login_view (request):
 
     param["form"] = form
     return render(request, 'client/login.html', param)
+
+
+def logout_view (request):
+    v_record(request)
+    logout(request)
+    return redirect("client:index")
+
+
+def register_view (request):
+    param = {
+        **get_client_params(page_title=_("注册")),
+    }
+    v_record(request)
+
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = create_user(
+                username=form.cleaned_data.get("username"),
+                email=form.cleaned_data.get("email"),
+                password=form.cleaned_data.get("password"),
+                first_name=form.cleaned_data.get("first_name"),
+                last_name=form.cleaned_data.get("last_name"),
+            )
+            if user:
+                login(request, user)
+                return redirect("client:index")
+            else:
+                form.add_error(None, ValidationError(_("注册失败，请重试"), code="RegisterFailed"))
+        else:
+            form = RegisterForm(request.POST)
+    else:
+        form = RegisterForm()
+
+    param["form"] = form
+    return render(request, 'client/register.html', param)
