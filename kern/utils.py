@@ -2,6 +2,7 @@ import json
 import os
 
 import requests as rq
+from django.contrib.auth import authenticate, login
 
 from EmarketClient import settings
 from .models import *
@@ -48,19 +49,21 @@ def create_user(**kwargs):
     first_name = kwargs.get("first_name")
     last_name = kwargs.get("last_name")
 
-    user = User.objects.create_user(username=username,
-                                    email=email,
-                                    password=password,
-                                    first_name=first_name,
-                                    last_name=last_name)
-    user.save()
+    user = User(
+        username=username,
+        email=email,
+        first_name=first_name,
+        last_name=last_name,
+    )
+    user.set_password(password)
     response = send_request("/auth/register/", "POST",
                             {"username": username, "email": email,
                              "first_name": first_name, "last_name": last_name})
     if response.status_code == 201:
+        user.uuid = response.json()["id"]
+        user.save()
         return user
     else:
-        user.delete()
         return None
 
 
