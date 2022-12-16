@@ -15,13 +15,13 @@ class LoginForm(forms.Form):
         max_length=150,
         min_length=8,
         validators=[username_validator],
-        help_text="8-150字符，仅可包含大小写字母、数字以及@/./+/-/_",
+        help_text=_("8-150字符，仅可包含大小写字母、数字以及@/./+/-/_"),
         error_messages={
-            "invalid": "用户名无效",
-            "max_length": "用户名长度不得超过150字符",
-            "min_length": "用户名长度不得少于8字符",
-            "UserNotExist": "用户不存在",
-            "empty": "用户名不得为空"
+            "invalid": _("用户名无效"),
+            "max_length": _("用户名长度不得超过150字符"),
+            "min_length": _("用户名长度不得少于8字符"),
+            "UserNotExist": _("用户不存在"),
+            "empty": _("用户名不得为空")
         },
     )
 
@@ -30,12 +30,12 @@ class LoginForm(forms.Form):
         max_length=128,
         min_length=8,
         widget=forms.PasswordInput,
-        help_text='8-128个字符，至少包含1个数字、1个字母',
+        help_text=_('8-128个字符，至少包含1个数字、1个字母'),
         error_messages={
-            "invalid": "密码格式错误，请包含8-128个字符，至少包含1个数字、1个字母",
-            "max_length": "密码长度不得超过128字符",
-            "min_length": "密码长度不得少于8字符",
-            "empty": "密码不得为空"
+            "invalid": _("密码格式错误，请包含8-128个字符，至少包含1个数字、1个字母"),
+            "max_length": _("密码长度不得超过128字符"),
+            "min_length": _("密码长度不得少于8字符"),
+            "empty": _("密码不得为空")
         }
     )
 
