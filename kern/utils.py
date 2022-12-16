@@ -81,15 +81,6 @@ def login_user (request, username, password):
 
 
 def v_record (request):
-    data = {
-        "ip": request.META["REMOTE_ADDR"],
-        "site": request.META["SERVER_NAME"],
-        "url": request.path,
-        "useragent": request.META["HTTP_USER_AGENT"]
-    }
-    if request.user.is_authenticated:
-        data["user"] = request.user.pk
-
     UserVisitRecord.objects.create(
         user=request.user if request.user.is_authenticated else None,
         user_agent=request.META["HTTP_USER_AGENT"],
@@ -97,9 +88,6 @@ def v_record (request):
         referer=request.META["HTTP_REFERER"] if "HTTP_REFERER" in request.META else None,
         path=request.path,
         query_string=request.META["QUERY_STRING"],
-
-        site=request.META["SERVER_NAME"],
-
         method=request.method,
     )
 
