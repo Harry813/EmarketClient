@@ -1,0 +1,142 @@
+{% extends 'client/template.html' %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <div class="breadcrumbs_area">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="breadcrumb_content">
+                        <h3>{% trans "我的账户" %}</h3>
+                        <ul>
+                            <li><a href="{% url 'client:index' %}">{% trans "首页" %}</a></li>
+                            <li>></li>
+                            <li>{% trans "我的账户" %}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="customer_login">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <div class="account_form">
+                        <h2>{% trans 'Register | 注册' %}</h2>
+                        <form method="post" class="row">
+                            {% csrf_token %}
+                            <div class="col-md-6">
+                                <label class="form-label" for="{{ form.first_name.id_for_label }}">
+                                    {{ form.first_name.label }}
+                                    {% if form.first_name.field.required %}
+                                        <span style="color: red">*</span>
+                                    {% endif %}
+                                </label>
+                                {% render_field form.first_name class="form-control" %}
+                                <div>
+                                    {% if form.first_name.errors %}
+                                        <p class="form-text" style="color: red;">{{ form.first_name.errors.0 }}</p>
+                                    {% elif form.first_name.help_text %}
+                                        <p class="form-text text-muted">{{ form.first_name.help_text }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="{{ form.last_name.id_for_label }}">
+                                    {{ form.last_name.label }}
+                                    {% if form.last_name.field.required %}
+                                        <span style="color: red">*</span>
+                                    {% endif %}
+                                </label>
+                                {% render_field form.last_name class="form-control" %}
+                                <div>
+                                    {% if form.last_name.errors %}
+                                        <p class="form-text" style="color: red;">{{ form.last_name.errors.0 }}</p>
+                                    {% elif form.last_name.help_text %}
+                                        <p class="form-text text-muted">{{ form.last_name.help_text }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="form-label" for="{{ form.username.id_for_label }}">
+                                    {{ form.username.label }}
+                                    {% if form.username.field.required %}
+                                        <span style="color: red">*</span>
+                                    {% endif %}
+                                </label>
+                                {% render_field form.username class="form-control" %}
+                                <div>
+                                    {% if form.username.errors %}
+                                        <p class="form-text" style="color: red;">{{ form.username.errors.0 }}</p>
+                                    {% elif form.username.help_text %}
+                                        <p class="form-text text-muted">{{ form.username.help_text }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="form-label" for="{{ form.email.id_for_label }}">
+                                    {{ form.email.label }}
+                                    {% if form.email.field.required %}
+                                        <span style="color: red">*</span>
+                                    {% endif %}
+                                </label>
+                                {% render_field form.email class="form-control" %}
+                                <div>
+                                    {% if form.email.errors %}
+                                        <p class="form-text" style="color: red;">{{ form.email.errors.0 }}</p>
+                                    {% elif form.email.help_text %}
+                                        <p class="form-text text-muted">{{ form.email.help_text }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="form-label" for="{{ form.password.id_for_label }}">
+                                    {{ form.password.label }}
+                                    {% if form.password.field.required %}
+                                        <span style="color: red">*</span>
+                                    {% endif %}
+                                </label>
+                                {% render_field form.password class="form-control" %}
+                                <div>
+                                    {% if form.password.errors %}
+                                        <p class="form-text" style="color: red;">{{ form.password.errors.0 }}</p>
+                                    {% elif form.password.help_text %}
+                                        <p class="form-text text-muted">{{ form.password.help_text }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="form-label" for="{{ form.password_confirm.id_for_label }}">
+                                    {{ form.password_confirm.label }}
+                                    {% if form.password_confirm.field.required %}
+                                        <span style="color: red">*</span>
+                                    {% endif %}
+                                </label>
+                                {% render_field form.password_confirm class="form-control" %}
+                                <div>
+                                    {% if form.password_confirm.errors %}
+                                        <p class="form-text"
+                                           style="color: red;">{{ form.password_confirm.errors.0 }}</p>
+                                    {% elif form.password_confirm.help_text %}
+                                        <p class="form-text text-muted">{{ form.password_confirm.help_text }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if form.errors %}
+                                <div>
+                                    <p class="form-text" style="color: red;">{{ form.errors.0 }}</p>
+                                </div>
+                            {% endif %}
+                            <div class="login_submit">
+                                <a href="#">{% trans "前往登录" %}</a>
+                                <button type="submit">{% trans "注册" %}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
