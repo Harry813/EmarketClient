@@ -3,6 +3,8 @@ import uuid
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from kern.utils.core import send_request
+
 
 class User(AbstractUser):
     uuid = models.UUIDField(blank=True, null=True)
@@ -59,3 +61,63 @@ class Address(models.Model):
     state = models.CharField(verbose_name="州", max_length=255)
     country = models.CharField(verbose_name="国家", max_length=255)
     zip_code = models.CharField(verbose_name="邮编", max_length=255)
+
+
+class Product(models.Model):
+    id = models.UUIDField(primary_key=True)
+
+    @property
+    def data (self):
+        data = send_request("/product/?mode=retrieve&id=" + str(self.id), "GET")
+        return data
+
+
+class ProductVariant(models.Model):
+    id = models.UUIDField(primary_key=True)
+    product = models.ForeignKey(verbose_name="产品", on_delete=models.CASCADE, to="Product")
+
+    @property
+    def data (self):
+        data = send_request("/variant/?mode=retrieve&id=" + str(self.product.id), "GET")
+        return data
+
+
+class Cart(models.Model):
+    user = models.ForeignKey(verbose_name="客户", on_delete=models.CASCADE, to="User", blank=True, null=True)
+    created_at = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
+    updated_at = models.DateTimeField(verbose_name="更新时间", auto_now=True)
+
+    class Meta:
+        verbose_name = "购物车"
+        verbose_name_plural = "购物车"
+
+    def __str__ (self):
+        return f"{self.user.full_name}的购物车"
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(verbose_name="购物车", on_delete=models.CASCADE, to="Cart")
+    product = models.ForeignKey(verbose_name="产品", on_delete=models.CASCADE, to="Product")
+    quantity = models.IntegerField(verbose_name="数量", default=1)
+    created_at = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
+    updated_at = models.DateTimeField(verbose_name="更新时间", auto_now=True)
+
+    class Meta:
+        verbose_name = "购物车项"
+        verbose_name_plural = "购物车项"
+
+    def __str__ (self):
+        return f"{self.cart.user.full_name}的购物车项"
+
+
+class Image(models.Model):
+    id = models.UUIDField(primary_key=True)
+    image = models.ImageField(verbose_name="图片", upload_to="images/")
+    alt = models.CharField(verbose_name="图片描述", max_length=255, blank=True, null=True)
+
+    def __str__ (self):
+        return f"{self.id}"
+
+    @property
+    def url (self):
+        return self.image.url
