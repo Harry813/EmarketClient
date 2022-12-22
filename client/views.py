@@ -1,18 +1,16 @@
-import os
-
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied, ValidationError
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+from django.contrib.auth import logout, login
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from client.forms import *
-from kern.utils import *
+from kern.models import Product
+from kern.utils.auth import v_record, create_user, login_user
+from kern.utils.content import sync_products
+from kern.utils.utils import *
 
 
-# Create your views here.
 def index (request):
     params = {
         **get_client_params(page_title=_("首页")),
