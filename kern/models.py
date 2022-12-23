@@ -1,4 +1,4 @@
-import uuid
+import time
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -65,11 +65,42 @@ class Address(models.Model):
 
 class Product(models.Model):
     id = models.UUIDField(primary_key=True)
+    raw_data = models.JSONField(default=dict)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def update (self):
+        response = send_request("/product/?mode=retrieve&id=" + str(self.id), "GET")
+        if response.status_code == 200:
+            if response.json() != self.raw_data:
+                self.raw_data = response.json()
+                self.save()
+            return self.raw_data
+        else:
+            return None
 
     @property
     def data (self):
-        data = send_request("/product/?mode=retrieve&id=" + str(self.id), "GET")
-        return data
+        if time.time() - self.updated_at.timestamp() > 3600:
+            self.update()
+        return self.raw_data
+
+    @property
+    def images (self):
+        images = self.data.get("images", [])
+        imgs = []
+        thumbnails = []
+        for a, b in images:
+            if a is None:
+                imgs.append(b)
+            else:
+                imgs.append(a)
+            if b is None:
+                thumbnails.append(a)
+            else:
+                thumbnails.append(b)
+        imgs = Image.objects.filter(id__in=imgs)
+        thumbnails = Image.objects.filter(id__in=thumbnails)
+        return list(zip(imgs, thumbnails))
 
 
 class ProductVariant(models.Model):
