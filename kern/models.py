@@ -141,14 +141,22 @@ class CartItem(models.Model):
         return f"{self.cart.user.full_name}的购物车项"
 
 
+class ImageManager(models.Manager):
+    def __delete__ (self, instance):
+        instance.img.delete()
+        super().__delete__(instance)
+
+
 class Image(models.Model):
-    id = models.UUIDField(primary_key=True)
-    image = models.ImageField(verbose_name="图片", upload_to="images/")
+    objects = ImageManager()
+    id = models.UUIDField(primary_key=True, editable=False)
+    img = models.ImageField(verbose_name="图片", upload_to="images/", blank=True, null=True)
     alt = models.CharField(verbose_name="图片描述", max_length=255, blank=True, null=True)
+    updated_at = models.DateTimeField(verbose_name="最后更新时间", blank=True, null=True)
 
     def __str__ (self):
         return f"{self.id}"
 
     @property
     def url (self):
-        return self.image.url
+        return self.img.url
