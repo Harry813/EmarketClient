@@ -1,24 +1,22 @@
-from kern.models import Product, ProductVariant
+from kern.models import Image
 from kern.utils.core import send_request
 
 
-def sync_products ():
-    response = send_request("/product/?mode=sync", "GET")
+def download_image (img_id):
+    response = send_request(f"/image/?mode=retrieve&id={img_id}", "GET")
     if response.status_code == 200:
-        for data in response.json():
-            product, status = Product.objects.update_or_create(
-                id=data["id"],
-                defaults={
-                    "id": data["id"],
-                }
-            )
-            for variant in data["variants"]:
-                ProductVariant.objects.update_or_create(
-                    id=variant,
-                    defaults={
-                        "id": variant,
-                        "product": product,
-                    }
-                )
+        suffix = response.headers["Content-Type"].split("/")[-1]
+        img, _ = Image.objects.update_or_create(
+            id=img_id,
+            defaults={
+                "id": img_id,
+                "img": f"images/{img_id}.{suffix}",
+                "alt": response.headers["alt"],
+                "updated_at": response.headers["updated_at"],
+            }
+        )
+        with open(img.img.path, "wb") as f:
+            f.write(response.content)
+
     else:
-        raise Exception(f"Error: {response.status_code}: {response.text}")
+        raise Exception(f"ERR: {response.status_code}: {response.text}")
