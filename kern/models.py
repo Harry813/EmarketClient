@@ -23,7 +23,7 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['username']
 
     @property
-    def full_name(self):
+    def full_name (self):
         return self.first_name + self.last_name
 
     class Meta:
