@@ -1,13 +1,14 @@
 from django.contrib.auth import logout, login
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from client.forms import *
-from kern.models import Product
+from kern.models import Product, Image
 from kern.utils.auth import v_record, create_user, login_user
-from kern.utils.content import sync_products
+from kern.utils.content import sync_images
+from kern.utils.core import send_request
 from kern.utils.utils import *
 
 
@@ -97,3 +98,14 @@ def register_view (request):
 
     param["form"] = form
     return render(request, 'client/register.html', param)
+
+
+def product_detail_view (request, product_id):
+    param = {
+        **get_client_params(page_title=_("产品")),
+    }
+    v_record(request)
+    product = get_object_or_404(Product, id=product_id)
+    param["product"] = product
+    param["imgs"] = product.images
+    return render(request, 'client/product.html', param)
