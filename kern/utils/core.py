@@ -9,10 +9,11 @@ def send_request (url, method, data=None, headers=None):
     """
     Send request to url
     :param url: url path to send request (e.g. /path/to/api)
-    :param method: request method ["GET", "POST", "PUT", "DELETE"]
+    :param method: request method ["GET", "POST", "PUT", "DELETE"], case insensitive
     :param data: data to send in format of dictionary, required by POST and PUT
     :param headers: headers to send
     """
+    method = method.upper()
     if headers is None:
         headers = {}
     headers = {
