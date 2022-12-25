@@ -24,20 +24,33 @@ def sync_products ():
             if product.id not in response.json():
                 product.delete()
         for data in response.json():
-            product, status = Product.objects.update_or_create(
+            obj, status = Product.objects.update_or_create(
                 id=data["id"],
                 defaults={
                     "id": data["id"],
                 }
             )
-            product.update()
-            for variant in data["variants"]:
-                ProductVariant.objects.update_or_create(
-                    id=variant,
-                    defaults={
-                        "id": variant,
-                        "product": product,
-                    }
-                )
+            if not status:
+                obj.update()
+    else:
+        raise Exception(f"ERR: {response.status_code}: {response.text}")
+
+
+def sync_variants ():
+    response = send_request("/variant/?mode=sync", "GET")
+    if response.status_code == 200:
+        for variant in ProductVariant.objects.all():
+            if variant.id not in response.json():
+                variant.delete()
+        for variant in response.json():
+            obj, status = ProductVariant.objects.update_or_create(
+                id=variant,
+                defaults={
+                    "id": variant,
+                }
+            )
+
+            if not status:
+                obj.update()
     else:
         raise Exception(f"ERR: {response.status_code}: {response.text}")
