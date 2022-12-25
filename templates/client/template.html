@@ -36,7 +36,7 @@
                                         {% if request.user.is_authenticated %}
                                             <li><a href="#">{% trans '资料' %}</a></li>
                                             <li><a href="#">{% trans '购物车' %}</a></li>
-                                            <li><a href="#">{% trans '愿望单' %}</a></li>
+                                            <li><a href="{% url 'client:wishlist' %}">{% trans '心愿单' %}</a></li>
                                             <li><a href="{% url 'client:logout' %}">{% trans '登出' %}</a></li>
                                         {% else %}
                                             <li><a href="{% url 'client:login' %}">{% trans '登录' %}</a></li>
@@ -181,7 +181,7 @@
                                         {% if request.user.is_authenticated %}
                                             <li><a href="#">{% trans '资料' %}</a></li>
                                             <li><a href="#">{% trans '购物车' %}</a></li>
-                                            <li><a href="#">{% trans '愿望单' %}</a></li>
+                                            <li><a href="{% url 'client:wishlist' %}">{% trans '心愿单' %}</a></li>
                                             <li><a href="{% url 'client:logout' %}">{% trans '登出' %}</a></li>
                                         {% else %}
                                             <li><a href="{% url 'client:login' %}">{% trans '登录' %}</a></li>
