@@ -1,9 +1,37 @@
-import time
+import datetime
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from kern.utils.core import send_request
+
+
+class RemoteModel(models.Model):
+    id = models.UUIDField(primary_key=True)
+    raw_data = models.JSONField(default=dict)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def is_expired (self):
+        diff = datetime.datetime.now(datetime.timezone.utc) - self.updated_at
+        return diff > datetime.timedelta(hours=1)
+
+    def update (self, base_url=None):
+        response = send_request(f"/{base_url}/?mode=retrieve&id={str(self.id)}", "GET")
+        if response.status_code == 200:
+            if response.json() != self.raw_data:
+                self.raw_data = response.json()
+            self.save()
+            return self.raw_data
+        else:
+            return None
+
+    def save (self, *args, **kwargs):
+        self.updated_at = datetime.datetime.now()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        abstract = True
 
 
 class User(AbstractUser):
@@ -25,6 +53,10 @@ class User(AbstractUser):
     @property
     def full_name (self):
         return self.first_name + self.last_name
+
+    @property
+    def wishlist (self):
+        return WishlistItem.objects.filter(user=self)
 
     class Meta:
         verbose_name = "客户"
@@ -63,54 +95,79 @@ class Address(models.Model):
     zip_code = models.CharField(verbose_name="邮编", max_length=255)
 
 
-class Product(models.Model):
-    id = models.UUIDField(primary_key=True)
-    raw_data = models.JSONField(default=dict)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def update (self):
-        response = send_request("/product/?mode=retrieve&id=" + str(self.id), "GET")
-        if response.status_code == 200:
-            if response.json() != self.raw_data:
-                self.raw_data = response.json()
-                self.save()
-            return self.raw_data
-        else:
-            return None
+class Product(RemoteModel):
+    @property
+    def name (self):
+        return self.raw_data.get("name", "")
 
     @property
-    def data (self):
-        if time.time() - self.updated_at.timestamp() > 3600:
-            self.update()
-        return self.raw_data
+    def short_description (self):
+        return self.raw_data.get("short_description", "")
+
+    @property
+    def description (self):
+        return self.raw_data.get("description", "")
+
+    @property
+    def meta_keywords (self):
+        return self.raw_data.get("meta_keywords", "")
+
+    @property
+    def meta_description (self):
+        return self.raw_data.get("meta_description", "")
 
     @property
     def images (self):
-        images = self.data.get("images", [])
-        imgs = []
-        thumbnails = []
-        for a, b in images:
-            if a is None:
-                imgs.append(b)
-            else:
-                imgs.append(a)
-            if b is None:
-                thumbnails.append(a)
-            else:
-                thumbnails.append(b)
-        imgs = Image.objects.filter(id__in=imgs)
-        thumbnails = Image.objects.filter(id__in=thumbnails)
-        return list(zip(imgs, thumbnails))
-
-
-class ProductVariant(models.Model):
-    id = models.UUIDField(primary_key=True)
-    product = models.ForeignKey(verbose_name="产品", on_delete=models.CASCADE, to="Product")
+        imgs = self.raw_data.get("images", [])
+        return [Image.objects.get(id=img) for img in imgs]
 
     @property
-    def data (self):
-        data = send_request("/variant/?mode=retrieve&id=" + str(self.product.id), "GET")
+    def thumbnails (self):
+        imgs = self.raw_data.get("thumbnails", [])
+        return [Image.objects.get(id=img) for img in imgs]
+
+    @property
+    def both_images (self):
+        data = []
+        for img, thumbnail in zip(self.images, self.thumbnails):
+            data.append({"image": img, "thumbnail": thumbnail})
         return data
+
+    @property
+    def cover (self):
+        return self.images[0]
+
+    @property
+    def cover_thumbnail (self):
+        return self.thumbnails[0]
+
+    @property
+    def variants (self):
+        return [ProductVariant.objects.get(id=variant) for variant in self.raw_data.get("variants", [])]
+
+    @property
+    def variant (self):
+        return self.variants[0]
+
+    def update (self, base_url="product"):
+        return super().update(base_url=base_url)
+
+
+class ProductVariant(RemoteModel):
+    @property
+    def price (self):
+        return self.raw_data.get("price", 0)
+
+    @property
+    def original_price (self):
+        return self.raw_data.get("original_price", 0)
+
+    @property
+    def product (self):
+        return Product.objects.get(id=self.raw_data.get("product"))
+
+    def update (self, base_url="variant"):
+        return super().update(base_url=base_url)
 
 
 class Cart(models.Model):
@@ -128,7 +185,7 @@ class Cart(models.Model):
 
 class CartItem(models.Model):
     cart = models.ForeignKey(verbose_name="购物车", on_delete=models.CASCADE, to="Cart")
-    product = models.ForeignKey(verbose_name="产品", on_delete=models.CASCADE, to="Product")
+    variant = models.ForeignKey(verbose_name="产品", on_delete=models.CASCADE, to="ProductVariant")
     quantity = models.IntegerField(verbose_name="数量", default=1)
     created_at = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name="更新时间", auto_now=True)
@@ -160,3 +217,17 @@ class Image(models.Model):
     @property
     def url (self):
         return self.img.url
+
+
+class WishlistItem(models.Model):
+    user = models.ForeignKey(verbose_name="客户", on_delete=models.CASCADE, to="User", blank=True, null=True)
+    variant = models.ForeignKey(verbose_name="产品", on_delete=models.CASCADE, to="ProductVariant")
+    created_at = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
+
+    @property
+    def product (self):
+        return self.variant.product
+
+    class Meta:
+        verbose_name = "心愿单项"
+        verbose_name_plural = "心愿单项"
