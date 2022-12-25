@@ -14,6 +14,7 @@ from kern.utils.utils import *
 
 def index (request):
     params = {
+        "active_page": "index",
         **get_client_params(page_title=_("首页")),
     }
     v_record(request)
@@ -30,6 +31,7 @@ def test (request):
 
 def login_view (request):
     param = {
+        "active_page": "user",
         **get_client_params(page_title=_("登录")),
     }
     v_record(request)
@@ -72,6 +74,7 @@ def logout_view (request):
 
 def register_view (request):
     param = {
+        "active_page": "user",
         **get_client_params(page_title=_("注册")),
     }
     v_record(request)
@@ -102,6 +105,7 @@ def register_view (request):
 
 def product_detail_view (request, product_id):
     param = {
+        "active_page": "shop",
         **get_client_params(page_title=_("产品")),
     }
     v_record(request)
