@@ -1,13 +1,14 @@
 from django.contrib.auth import logout, login
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from client.forms import *
-from kern.models import Product, Image
+from kern.models import *
 from kern.utils.auth import v_record, create_user, login_user
-from kern.utils.content import sync_images
 from kern.utils.core import send_request
 from kern.utils.utils import *
 
@@ -103,6 +104,23 @@ def register_view (request):
     return render(request, 'client/register.html', param)
 
 
+def products_view (request):
+    param = {
+        "active_page": "shop",
+        **get_client_params(page_title=_("产品")),
+    }
+    v_record(request)
+    page = request.GET.get("page", 1)
+
+    products = Product.objects.all()
+    p = Paginator(products, 12)
+    param["products"] = p.get_page(page)
+    param["pages"] = p.get_elided_page_range(page, on_each_side=2, on_ends=1)
+    param["paginator"] = p
+    param["current_page"] = page
+    return render(request, 'client/shop.html', param)
+
+
 def product_detail_view (request, product_id):
     param = {
         "active_page": "shop",
@@ -111,5 +129,17 @@ def product_detail_view (request, product_id):
     v_record(request)
     product = get_object_or_404(Product, id=product_id)
     param["product"] = product
-    param["imgs"] = product.images
+    param["imgThumbs"] = zip(product.images)
     return render(request, 'client/product.html', param)
+
+
+@login_required("client:login")
+def wishlist_view (request):
+    param = {
+        "active_page": "user",
+        **get_client_params(page_title=_("心愿单")),
+    }
+    v_record(request)
+    user = User.objects.get(id=request.user.id)
+    param["wishlist"] = user.wishlist.all()
+    return render(request, 'client/wishlist.html', param)
