@@ -1,0 +1,356 @@
+{% extends "client/template.html" %}
+{% load i18n %}
+
+{% block content %}
+    <!--breadcrumbs area start-->
+    <div class="breadcrumbs_area">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="breadcrumb_content">
+                        <ul>
+                            <li><a href="{% url 'client:index' %}">{% trans "首页" %}</a></li>
+                            <li>></li>
+                            <li>{% trans "所有商品" %}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--breadcrumbs area end-->
+
+    <!--shop  area start-->
+    <div class="shop_area shop_fullwidth shop_reverse">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <!--shop wrapper start-->
+                    <!--shop toolbar start-->
+                    <div class="shop_toolbar">
+                        <div class="list_button">
+                            <ul class="nav" role="tablist">
+                                <li>
+                                    <a class="active" data-bs-toggle="tab" href="#large" role="tab"
+                                       aria-controls="large" aria-selected="true"><i class="ion-grid"></i></a>
+                                </li>
+                                <li>
+                                    <a data-bs-toggle="tab" href="#list" role="tab" aria-controls="list"
+                                       aria-selected="false"><i class="ion-ios-list-outline"></i> </a>
+                                </li>
+                            </ul>
+                        </div>
+                        {% comment %}
+                        todo: 添加排序功能
+                        <div class="orderby_wrapper">
+                            <h3>Sort By : </h3>
+                            <div class=" niceselect_option">
+
+                                <form class="select_option" action="#">
+
+                                    <select name="orderby" id="short">
+                                        <option selected value="1">Sort by popularity</option>
+                                        <option value="2">Sort by popularity</option>
+                                        <option value="3">Sort by newness</option>
+                                        <option value="4">Sort by price: low to high</option>
+                                        <option value="5">Sort by price: high to low</option>
+                                        <option value="6">Product Name: Z</option>
+                                    </select>
+                                </form>
+                            </div>
+                            {% endcomment %}
+                        <div class="page_amount">
+                            <p>
+                                {% blocktrans with start=products.start_index end=products.end_index total=paginator.count %}
+                                    显示 {{ start }} - {{ end }} 项结果，共 {{ total }} 项
+                                {% endblocktrans %}</p>
+                        </div>
+                    </div>
+                </div>
+                <!--shop toolbar end-->
+
+                <!--shop tab product start-->
+                <div class="tab-content">
+                    <div class="tab-pane grid_view fade show active" id="large" role="tabpanel">
+                        <div class="row">
+                            {% for product in products %}
+                                <div class="col-lg-3 col-md-4 col-sm-6">
+                                    <div class="single_product">
+                                        <div class="product_thumb">
+                                            <a class="primary_img"
+                                               href="{% url 'client:product' product_id=product.id %}"><img
+                                                    src="{{ product.cover.url }}"
+                                                    alt="{{ product.cover.alt }}"></a>
+                                            <a class="secondary_img"
+                                               href="{% url 'client:product' product_id=product.id %}"><img
+                                                    src="{{ product.cover.url }}"
+                                                    alt="{{ product.cover.alt }}"></a>
+                                            <div class="quick_button">
+                                                <a href="#" data-bs-toggle="modal"
+                                                   data-bs-target="#modal_{{ forloop.counter }}"
+                                                   data-placement="top"
+                                                   data-original-title="quick view"> {% trans "快速查看" %}</a>
+                                            </div>
+                                        </div>
+                                        <div class="product_content">
+                                            <div class="tag_cate">
+                                                <a href="#">{{ product.category.name }}</a>
+                                            </div>
+                                            <h3>
+                                                <a href="{% url 'client:product' product_id=product.id %}">{{ product.name }}</a>
+                                            </h3>
+                                            <div class="price_box">
+                                                <span class="old_price">£{{ product.variant.original_price }}</span>
+                                                <span class="current_price">£{{ product.variant.price }}</span>
+                                            </div>
+                                            <div class="product_hover w-100">
+                                                {% comment %}
+                                                    todo: 添加用户评分
+                                                    <div class="product_ratings">
+                                                        <ul>
+                                                            <li><a href="#"><i class="ion-ios-star-outline"></i></a>
+                                                            </li>
+                                                            <li><a href="#"><i class="ion-ios-star-outline"></i></a>
+                                                            </li>
+                                                            <li><a href="#"><i class="ion-ios-star-outline"></i></a>
+                                                            </li>
+                                                            <li><a href="#"><i class="ion-ios-star-outline"></i></a>
+                                                            </li>
+                                                            <li><a href="#"><i class="ion-ios-star-outline"></i></a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>{% endcomment %}
+                                                <div class="product_desc">
+                                                    <p>{{ product.short_description }}</p>
+                                                </div>
+                                                <div class="action_links">
+                                                    <ul>
+                                                        <li><a data-placement="top" class="add_wishlist"
+                                                               href="{% url 'client:wishlist_add' product.variant.id %}"
+                                                               title="{% trans '添加到心愿单' %}"
+                                                               data-bs-toggle="tooltip"><span
+                                                                class="icon icon-Heart"></span></a></li>
+                                                        <li><a data-placement="top" href="cart.html"
+                                                               data-variant="{{ product.variant.id }}"
+                                                               data-bs-toggle="tooltip"
+                                                               title="{% trans "添加到购物车" %}">
+                                                            <i class="icon icon-ShoppingCart"></i></a>
+                                                        </li>
+                                                        {% comment %}<li class="add_to_cart">
+                                                            <a class="btn_add_cart" href="cart.html"
+                                                               data-variant="{{ product.variant.id }}" data-bs-toggle="tooltip"
+                                                               title="{% trans "添加到购物车" %}">
+                                                                <i class="icon icon-ShoppingCart"></i></a>
+                                                        </li>
+                                                        <li><a href="compare.html" title="compare"><i
+                                                                class="ion-ios-settings-strong"></i></a></li>{% endcomment %}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <div class="col-lg-3 col-md-4 col-sm-6">
+                                    <p>{% trans "暂无商品" %}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="tab-pane list_view fade " id="list" role="tabpanel">
+                        {% for product in products %}
+                            <div class="single_product product_list_item">
+                                <div class="row">
+                                    <div class="col-lg-4 col-md-5">
+                                        <div class="product_thumb">
+                                            <a class="primary_img w-100"
+                                               href="{% url 'client:product' product_id=product.id %}">
+                                                <img src="{{ product.cover.url }}"
+                                                     alt="{{ product.cover.alt }}">
+                                            </a>
+                                            <a class="secondary_img w-100"
+                                               href="{% url 'client:product' product_id=product.id %}">
+                                                <img src="{{ product.cover.url }}"
+                                                     alt="{{ product.cover.alt }}">
+                                            </a>
+                                            <div class="quick_button">
+                                                <a href="#" data-bs-toggle="modal"
+                                                   data-bs-target="#modal_{{ forloop.counter }}"
+                                                   data-original-title="quick view"> {% trans "快速查看" %}</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-8 col-md-7">
+                                        <div class="product_content">
+                                            <h3>
+                                                <a href="{% url 'client:product' product_id=product.id %}">{{ product.name }}</a>
+                                            </h3>
+                                            {% comment %}<div class="product_ratings">
+                                                    <ul>
+                                                        <li><a href="#"><i class="ion-ios-star-outline"></i></a>
+                                                        </li>
+                                                        <li><a href="#"><i class="ion-ios-star-outline"></i></a>
+                                                        </li>
+                                                        <li><a href="#"><i class="ion-ios-star-outline"></i></a>
+                                                        </li>
+                                                        <li><a href="#"><i class="ion-ios-star-outline"></i></a>
+                                                        </li>
+                                                        <li><a href="#"><i class="ion-ios-star-outline"></i></a>
+                                                        </li>
+                                                    </ul>
+                                                </div>{% endcomment %}
+                                            <div class="product_desc">
+                                                <p>{{ product.short_description }}</p>
+                                            </div>
+                                            <div class="price_box">
+                                                <span class="old_price">£{{ product.variant.original_price }}</span>
+                                                <span class="current_price">£{{ product.variant.price }}</span>
+                                            </div>
+
+                                            <div class="action_links">
+                                                <ul>
+                                                    <li><a data-placement="top" class="add_wishlist"
+                                                           href="{% url 'client:wishlist_add' product.variant.id %}"
+                                                           title="{% trans '添加到心愿单' %}"
+                                                           data-bs-toggle="tooltip"><span
+                                                            class="icon icon-Heart"></span></a></li>
+                                                    <li><a data-placement="top" href="cart.html"
+                                                           data-variant="{{ product.variant.id }}"
+                                                           data-bs-toggle="tooltip"
+                                                           title="{% trans "添加到购物车" %}">
+                                                        <i class="icon icon-ShoppingCart"></i></a>
+                                                    </li>
+
+                                                    {% comment %}<li><a href="compare.html" title="compare"><i
+                                                            class="ion-ios-settings-strong"></i></a></li>{% endcomment %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+                <!--shop tab product end-->
+                <!--shop toolbar start-->
+                <div class="shop_toolbar t_bottom">
+                    <div class="pagination">
+                        <ul>
+                            {% if products.has_previous %}
+                                <li><a href="?page=1"><i class="fa-solid fa-angles-left"></i></a></li>
+                                <li class="next">
+                                    <a href="?page={{ products.previous_page_number }}">
+                                        <i class="fa-solid fa-chevron-left"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% for page in pages %}
+                                {% if page == current_page %}
+                                    <li class="current">{{ page }}</li>
+                                {% elif page == "…" %}
+                                    <li class="disabled"><span>…</span></li>
+                                {% else %}
+                                    <li><a href="?page={{ page }}">{{ page }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if products.has_next %}
+                                <li class="next">
+                                    <a href="?page={{ products.next_page_number }}">
+                                        <i class="fa-solid fa-chevron-right"></i>
+                                    </a>
+                                </li>
+                                <li><a href="?page={{ paginator.num_pages }}"><i
+                                        class="fa-solid fa-angles-right"></i></a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+                <!--shop toolbar end-->
+                <!--shop wrapper end-->
+            </div>
+        </div>
+    </div>
+    </div>
+    <!--shop  area end-->
+
+    {% for product in products %}
+        <div class="modal fade" id="modal_{{ forloop.counter }}" tabindex="-1" role="dialog"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <button type="button" class="close" data-bs-dismiss="modal"
+                            aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <div class="modal_body">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-5 col-md-5 col-sm-12">
+                                    <div class="modal_tab">
+                                        <div class="tab-content product-details-large">
+                                            {% for thumb in product.thumbnails %}
+                                                <div class="tab-pane fade {% if forloop.first %}show active{% endif %}"
+                                                     id="tab{{ forloop.counter }}"
+                                                     role="tabpanel">
+                                                    <div class="modal_tab_img">
+                                                        <a href="#"><img
+                                                                src="{{ thumb.url }}"
+                                                                alt=""></a>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="modal_tab_button">
+                                            <ul class="nav product_navactive owl-carousel"
+                                                role="tablist">
+                                                {% for thumb in product.thumbnails %}
+                                                    <li>
+                                                        <a class="nav-link active"
+                                                           data-bs-toggle="tab"
+                                                           href="#tab{{ forloop.counter }}"
+                                                           role="tab"
+                                                           aria-controls="tab{{ forloop.counter }}"
+                                                           aria-selected="false"><img
+                                                                src="{{ thumb.url }}"
+                                                                alt=""></a>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-7 col-md-7 col-sm-12">
+                                    <div class="modal_right">
+                                        <div class="modal_title mb-10">
+                                            <h2>{{ product.name }}</h2>
+                                        </div>
+                                        <div class="modal_price mb-10">
+                                            <span class="old_price">£{{ product.variant.original_price }}</span>
+                                            <span class="current_price">£{{ product.variant.price }}</span>
+                                        </div>
+                                        <div class="see_all">
+                                            <a href="{% url 'client:product' product_id=product.id %}">{% trans "更多详情" %}</a>
+                                        </div>
+                                        <div class="modal_add_to_cart mb-15">
+                                            <form action="#">
+                                                <input min="0" max="100" step="2" value="1"
+                                                       type="number">
+                                                <button type="submit"
+                                                        data-variant="{{ product.variant.id }}">{% trans "添加到购物车" %}</button>
+                                            </form>
+                                        </div>
+                                        <div class="modal_description mb-15">
+                                            <p>{{ product.short_description }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
