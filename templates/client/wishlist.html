@@ -1,0 +1,89 @@
+{% extends "client/template.html" %}
+{% load i18n %}
+
+{% block content %}
+    <!--breadcrumbs area start-->
+    <div class="breadcrumbs_area">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="breadcrumb_content">
+                        <h3>Wishlist</h3>
+                        <ul>
+                            <li><a href="{% url 'client:index' %}">{% trans "首页" %}</a></li>
+                            <li>></li>
+                            <li>{% trans '心愿单' %}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--breadcrumbs area end-->
+
+    <!--wishlist area start -->
+    <div class="wishlist_area">
+        <div class="container">
+            <form action="#">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="table_desc wishlist">
+                            <div class="cart_page table-responsive">
+                                <table>
+                                    <thead>
+                                    <tr>
+                                        <th class="product_remove">{% trans "删除" %}</th>
+                                        <th class="product_thumb">{% trans "图片" %}</th>
+                                        <th class="product_name">{% trans "产品" %}</th>
+                                        <th class="product-price">{% trans "价格" %}</th>
+                                        <th class="product_total">{% trans "加入购物车" %}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for item in wishlist %}
+                                        <tr>
+                                            <td class="product_remove"><a
+                                                    href="{% url 'client:wishlist_remove' item.id %}">X</a></td>
+                                            <td class="product_thumb"><a
+                                                    href="{% url 'client:product' item.product.id %}"><img
+                                                    src="{{ item.product.cover_thumbnail.url }}" alt=""></a></td>
+                                            <td class="product_name"><a
+                                                    href="{% url 'client:product' item.product.id %}">{{ item.product.name }}</a>
+                                            </td>
+                                            <td class="product-price">£{{ item.variant.price }}</td>
+                                            <td class="product_total"><a href="#">Add To Cart</a></td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="5">{% trans "暂无商品，快去选购吧！" %}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+            <div class="row">
+                <div class="col-12">
+                    <div class="wishlist_share">
+                        <h4>Share on:</h4>
+                        <ul>
+                            <li><a href="#"><i class="fa fa-rss"></i></a></li>
+                            <li><a href="#"><i class="fa fa-vimeo"></i></a></li>
+                            <li><a href="#"><i class="fa fa-tumblr"></i></a></li>
+                            <li><a href="#"><i class="fa fa-pinterest"></i></a></li>
+                            <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!--wishlist area end -->
+
+{% endblock %}
