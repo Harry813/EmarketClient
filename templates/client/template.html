@@ -303,7 +303,7 @@
                                         <li {% if active_page == "shop" %}class="active"{% endif %}><a
                                                 href="{% url 'client:shop' %}">shop | 商品</a>
                                         </li>
-                                        <li><a href="shop.html">shop <i class="fa fa-angle-down"></i></a>
+                                        {% comment %}<li><a href="shop.html">shop <i class="fa fa-angle-down"></i></a>
                                             <ul class="mega_menu">
                                                 <li><a href="#">Shop Layouts</a>
                                                     <ul>
@@ -346,7 +346,7 @@
                                                 <li><a href="blog-right.html">blog right</a></li>
                                                 <li><a href="blog-sticky.html">blog sticky</a></li>
                                             </ul>
-                                        </li>
+                                        </li>{% endcomment %}
                                         <li><a href="portfolio.html">portfolio</a></li>
                                         <li><a href="#">pages <i class="fa fa-angle-down"></i></a>
                                             <ul class="sub_menu pages">
