@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'widget_tweaks',
+    'rest_framework',
 
     'kern',
     'client',
