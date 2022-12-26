@@ -126,7 +126,7 @@
                                                 <div class="action_links">
                                                     <ul>
                                                         <li><a data-placement="top" class="add_wishlist"
-                                                               href="{% url 'client:wishlist_add' product.variant.id %}"
+                                                               data-variant="{{ product.variant.id }}"
                                                                title="{% trans '添加到心愿单' %}"
                                                                data-bs-toggle="tooltip"><span
                                                                 class="icon icon-Heart"></span></a></li>
@@ -210,7 +210,7 @@
                                             <div class="action_links">
                                                 <ul>
                                                     <li><a data-placement="top" class="add_wishlist"
-                                                           href="{% url 'client:wishlist_add' product.variant.id %}"
+                                                           data-variant="{{ product.variant.id }}"
                                                            title="{% trans '添加到心愿单' %}"
                                                            data-bs-toggle="tooltip"><span
                                                             class="icon icon-Heart"></span></a></li>

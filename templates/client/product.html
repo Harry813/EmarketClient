@@ -70,7 +70,8 @@
                             </div>
                             <div class=" product_d_action">
                                 <ul>
-                                    <li><a href="#" title="Add to wishlist">+ Add to Wishlist</a></li>
+                                    <li><a class="add_wishlist" data-variant="{{ product.variant.id }}"
+                                           title="{% trans '添加到心愿单' %}">+ {% trans '添加到心愿单' %}</a></li>
                                     {% comment %}<li><a href="#" title="Add to wishlist">+ Compare</a></li>{% endcomment %}
                                 </ul>
                             </div>
