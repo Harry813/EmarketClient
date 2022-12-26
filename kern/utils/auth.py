@@ -7,11 +7,11 @@ from kern.utils.core import send_request
 def v_record (request):
     UserVisitRecord.objects.create(
         user=request.user if request.user.is_authenticated else None,
-        user_agent=request.META["HTTP_USER_AGENT"],
-        ip=request.META["REMOTE_ADDR"],
-        referer=request.META["HTTP_REFERER"] if "HTTP_REFERER" in request.META else None,
+        user_agent=request.META.get("HTTP_USER_AGENT", None),
+        ip=request.META.get("HTTP_X_REAL_IP", None),
+        referer=request.META.get("HTTP_REFERER", None),
         path=request.path,
-        query_string=request.META["QUERY_STRING"],
+        query_string=request.META.get("QUERY_STRING", None),
         method=request.method,
     )
 
