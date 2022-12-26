@@ -42,8 +42,9 @@
                                     <tbody>
                                     {% for item in wishlist %}
                                         <tr>
-                                            <td class="product_remove"><a
-                                                    href="{% url 'client:wishlist_remove' item.id %}">X</a></td>
+                                            <td class="product_remove"><a class="remove_wishlist"
+                                                                          data-variant="{{ item.variant.id }}">X</a>
+                                            </td>
                                             <td class="product_thumb"><a
                                                     href="{% url 'client:product' item.product.id %}"><img
                                                     src="{{ item.product.cover_thumbnail.url }}" alt=""></a></td>
