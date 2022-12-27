@@ -143,3 +143,12 @@ def wishlist_view (request):
     user = User.objects.get(id=request.user.id)
     param["wishlist"] = user.wishlist.all()
     return render(request, 'client/wishlist.html', param)
+
+
+@login_required(login_url="client:login")
+def cart_view (request):
+    param = {
+        "active_page": "user",
+        **get_client_params(request=request, page_title=_("购物车")),
+    }
+    return render(request, 'client/cart.html', param)

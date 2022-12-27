@@ -1,0 +1,158 @@
+{% extends 'client/template.html' %}
+{% load i18n %}
+
+{% block content %}
+    <!--breadcrumbs area start-->
+    <div class="breadcrumbs_area">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="breadcrumb_content">
+                        <h3>{% trans "购物车" %}</h3>
+                        <ul>
+                            <li><a href="{% url 'client:index' %}">{% trans "首页" %}</a></li>
+                            <li>></li>
+                            <li>{% trans "购物车" %}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--breadcrumbs area end-->
+
+    <!--shopping cart area start -->
+    <div class="shopping_cart_area">
+        <div class="container">
+            <form action="#">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="table_desc">
+                            <div class="cart_page table-responsive">
+                                <table>
+                                    <thead>
+                                    <tr>
+                                        <th class="product_remove">{% trans "删除" %}</th>
+                                        <th class="product_thumb">{% trans "图片" %}</th>
+                                        <th class="product_name">{% trans "品名" %}</th>
+                                        <th class="product-price">{% trans "价格" %}</th>
+                                        <th class="product_quantity">{% trans "数量" %}</th>
+                                        <th class="product_total">{% trans "总价" %}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for item in cart %}
+                                        <tr>
+                                            <td class="product_remove"><a class="remove_cart"
+                                                                          data-variant="{{ item.variant.id }}"><i
+                                                    class="fa fa-trash-o"></i></a></td>
+                                            <td class="product_thumb"><a
+                                                    href="{% url 'client:product' product_id=item.product.id %}"><img
+                                                    src="{{ item.image.url }}" alt=""></a></td>
+                                            <td class="product_name"><a
+                                                    href="{% url 'client:product' product_id=item.product.id %}">{{ item.name }}</a>
+                                            </td>
+                                            <td class="product-price">£{{ item.price }}</td>
+                                            <td class="product_quantity"><label>{% trans "数量" %}</label>
+                                                <input min="0" max="100" value="{{ item.quantity }}" type="number"
+                                                       data-variant="{{ item.variant.id }}"></td>
+                                            <td class="product_total">£{{ item.total }}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="6">{% trans "暂无商品，快去选购吧！" %}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="cart_submit">
+                                <button id="update_cart" type="button">{% trans "更新购物车" %}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--coupon code area start-->
+                <div class="coupon_area">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6">
+                            <div class="coupon_code left">
+                                <h3>Coupon</h3>
+                                <div class="coupon_inner">
+                                    <p>Enter your coupon code if you have one.</p>
+                                    <input placeholder="Coupon code" type="text">
+                                    <button type="button">Apply coupon</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <div class="coupon_code right">
+                                <h3>Cart Totals</h3>
+                                <div class="coupon_inner">
+                                    <div class="cart_subtotal">
+                                        <p>Subtotal</p>
+                                        <p class="cart_amount">£{{ cart_subtotal }}</p>
+                                    </div>
+                                    <div class="cart_subtotal ">
+                                        <p>Shipping</p>
+                                        <p class="cart_amount"><span>Flat Rate:</span> £255.00</p>
+                                    </div>
+                                    <a href="#">Calculate shipping</a>
+
+                                    <div class="cart_subtotal">
+                                        <p>Total</p>
+                                        <p class="cart_amount">£215.00</p>
+                                    </div>
+                                    <div class="checkout_btn">
+                                        <a href="#">{% trans "前往付款" %}</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--coupon code area end-->
+            </form>
+        </div>
+    </div>
+    <!--shopping cart area end -->
+{% endblock %}
+
+{% block js %}
+    <script>
+        // 当#update_cart按钮被点击时
+        $('#update_cart').click(function () {
+            let inputs = $('input[data-variant]');
+            let data = [];
+            inputs.each(function () {
+                let variant = $(this).data('variant');
+                let quantity = $(this).val();
+                if (variant && quantity) {
+                    data.push({
+                        id: variant,
+                        quantity: quantity
+                    })
+                }
+            });
+            console.log(data);
+            // 发送ajax请求
+            $.ajax({
+                url: '{% url 'kern:cart' %}',
+                method: 'push',
+                data: {
+                    "items": JSON.stringify(data),
+                    "mode": "full_update"
+                },
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    notyf.success(data.msg);
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 2000)
+                }
+            })
+        });
+    </script>
+{% endblock %}
