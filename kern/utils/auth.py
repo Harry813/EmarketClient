@@ -5,10 +5,14 @@ from kern.utils.core import send_request
 
 
 def v_record (request):
+    ip = request.headers.get("X-Forwarded-For", None)
+    if not ip:
+        ip = request.META.get("REMOTE_ADDR", "0.0.0.0")
     UserVisitRecord.objects.create(
         user=request.user if request.user.is_authenticated else None,
         user_agent=request.META.get("HTTP_USER_AGENT", None),
-        ip=request.META.get("HTTP_X_REAL_IP", None),
+        session_key=request.session.session_key,
+        ip=ip,
         referer=request.META.get("HTTP_REFERER", None),
         path=request.path,
         query_string=request.META.get("QUERY_STRING", None),
