@@ -187,11 +187,35 @@ class CartItem(models.Model):
     updated_at = models.DateTimeField(verbose_name="更新时间", auto_now=True)
 
     class Meta:
-        verbose_name = "购物车项"
-        verbose_name_plural = "购物车项"
+        verbose_name = "购物车商品"
+        verbose_name_plural = "购物车商品"
 
-    def __str__ (self):
-        return f"{self.cart.user.full_name}的购物车项"
+    @property
+    def name (self):
+        return self.variant.product.name
+
+    @property
+    def price (self):
+        # float to decimal, 2 decimal places
+        return Decimal(self.variant.price.quantize(Decimal("0.00")))
+
+    @property
+    def total (self):
+        return self.price * self.quantity
+
+    @property
+    def image (self):
+        return self.variant.product.cover_thumbnail
+
+    @property
+    def product (self):
+        return self.variant.product
+
+    def save (self, *args, **kwargs):
+        if self.quantity == 0:
+            self.delete()
+        else:
+            super().save(*args, **kwargs)
 
 
 class ImageManager(models.Manager):
