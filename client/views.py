@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -8,7 +10,7 @@ from django.utils.translation import gettext as _
 
 from client.forms import *
 from kern.models import *
-from kern.utils.auth import v_record, create_user, login_user
+from kern.utils.auth import login_user, create_user
 from kern.utils.core import send_request
 from kern.utils.utils import *
 
@@ -16,9 +18,8 @@ from kern.utils.utils import *
 def index (request):
     params = {
         "active_page": "index",
-        **get_client_params(page_title=_("首页")),
+        **get_client_params(request=request, page_title=_("首页")),
     }
-    v_record(request)
     return render(request, 'client/index.html', params)
 
 
@@ -33,11 +34,10 @@ def test (request):
 def login_view (request):
     param = {
         "active_page": "user",
-        **get_client_params(page_title=_("登录")),
+        **get_client_params(request=request, page_title=_("登录")),
     }
-    v_record(request)
     try:
-        next_url = request.POST.get("next")
+        next_url = request.GET.get("next")
     except IndexError:
         next_url = reverse("mgt:index")
 
@@ -68,7 +68,6 @@ def login_view (request):
 
 
 def logout_view (request):
-    v_record(request)
     logout(request)
     return redirect("client:index")
 
@@ -76,9 +75,8 @@ def logout_view (request):
 def register_view (request):
     param = {
         "active_page": "user",
-        **get_client_params(page_title=_("注册")),
+        **get_client_params(request=request, page_title=_("注册")),
     }
-    v_record(request)
 
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -107,9 +105,8 @@ def register_view (request):
 def products_view (request):
     param = {
         "active_page": "shop",
-        **get_client_params(page_title=_("产品")),
+        **get_client_params(request=request, page_title=_("产品")),
     }
-    v_record(request)
     page = request.GET.get("page", 1)
 
     products = Product.objects.all()
@@ -124,22 +121,20 @@ def products_view (request):
 def product_detail_view (request, product_id):
     param = {
         "active_page": "shop",
-        **get_client_params(page_title=_("产品")),
+        **get_client_params(request=request, page_title=_("产品")),
     }
-    v_record(request)
     product = get_object_or_404(Product, id=product_id)
     param["product"] = product
     param["imgThumbs"] = zip(product.images)
     return render(request, 'client/product.html', param)
 
 
-@login_required("client:login")
+@login_required(login_url="client:login")
 def wishlist_view (request):
     param = {
         "active_page": "user",
-        **get_client_params(page_title=_("心愿单")),
+        **get_client_params(request=request, page_title=_("心愿单")),
     }
-    v_record(request)
     user = User.objects.get(id=request.user.id)
     param["wishlist"] = user.wishlist.all()
     return render(request, 'client/wishlist.html', param)
