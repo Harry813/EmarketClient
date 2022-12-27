@@ -55,18 +55,7 @@
 <script src="{% static 'client/js/main.js' %}"></script>
 <script>
     const notyf = new Notyf({
-        duration: 2000,
-        types: [
-            {
-                type: 'warning',
-                background: 'orange',
-                icon: {
-                    className: 'material-icons',
-                    tagName: 'i',
-                    text: 'warning'
-                }
-            }
-        ]
+        duration: 1500,
     });
     $(document).on('click', 'a.add_wishlist, button.add_wishlist', function (e) {
         e.preventDefault();
@@ -106,11 +95,69 @@
                 notyf.success(data["msg"]);
                 setTimeout(function () {
                     window.location.reload();
-                }, 2000);
+                }, 1500);
             }
         });
     });
+    $(document).on('click', 'a.add_cart, button.add_cart', function (e) {
+        e.preventDefault();
+        let $this = $(this);
+        let variant_id = $this.data('variant');
 
+        $.ajax({
+            url: "{% url 'kern:cart' %}",
+            type: 'POST',
+            data: {
+                id: variant_id,
+            },
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            success: function (data) {
+                notyf.success(data["msg"]);
+            }
+        });
+    });
+    $(document).on('click', 'a.remove_cart, button.remove_cart', function (e) {
+        e.preventDefault();
+        let $this = $(this);
+        let variant_id = $this.data('variant');
+
+        $.ajax({
+            url: "{% url 'kern:cart' %}?id=" + variant_id,
+            type: 'DELETE',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            success: function (data) {
+                console.log(data);
+                notyf.success(data["msg"]);
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1500);
+            }
+        });
+    });
+    $(document).on('submit', 'form.add_cart_form', function (e) {
+        e.preventDefault();
+        let $this = $(this);
+        let $quantity = $this.find('input[name="quantity"]');
+        let variant_id = $quantity.data('variant');
+        $.ajax({
+            url: "{% url 'kern:cart' %}",
+            type: 'POST',
+            data: {
+                id: variant_id,
+                quantity: quantity,
+            },
+            headers: {
+                'X-CSRFToken': '{{ csrftoken }}'
+            },
+            success: function (data) {
+                notyf.success(data["msg"]);
+            }
+        });
+    });
 </script>
 {% block js %}
 {% endblock %}
