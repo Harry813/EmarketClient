@@ -106,32 +106,32 @@ class Address(models.Model):
 class Product(RemoteModel):
     @property
     def name (self):
-        return self.raw_data.get("name", "")
+        return self.data.get("name", "")
 
     @property
     def short_description (self):
-        return self.raw_data.get("short_description", "")
+        return self.data.get("short_description", "")
 
     @property
     def description (self):
-        return self.raw_data.get("description", "")
+        return self.data.get("description", "")
 
     @property
     def meta_keywords (self):
-        return self.raw_data.get("meta_keywords", "")
+        return self.data.get("meta_keywords", "")
 
     @property
     def meta_description (self):
-        return self.raw_data.get("meta_description", "")
+        return self.data.get("meta_description", "")
 
     @property
     def images (self):
-        imgs = self.raw_data.get("images", [])
+        imgs = self.data.get("images", [])
         return [Image.objects.get(id=img) for img in imgs]
 
     @property
     def thumbnails (self):
-        imgs = self.raw_data.get("thumbnails", [])
+        imgs = self.data.get("thumbnails", [])
         return [Image.objects.get(id=img) for img in imgs]
 
     @property
