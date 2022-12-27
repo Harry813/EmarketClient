@@ -1,4 +1,5 @@
 import datetime
+from decimal import Decimal
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -29,6 +30,12 @@ class RemoteModel(models.Model):
     def save (self, *args, **kwargs):
         self.updated_at = datetime.datetime.now()
         super().save(*args, **kwargs)
+
+    @property
+    def data (self):
+        if self.is_expired:
+            self.update()
+        return self.raw_data
 
     class Meta:
         abstract = True
