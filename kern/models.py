@@ -151,7 +151,7 @@ class Product(RemoteModel):
 
     @property
     def variants (self):
-        return [ProductVariant.objects.get(id=variant) for variant in self.raw_data.get("variants", [])]
+        return [ProductVariant.objects.get(id=variant) for variant in self.data.get("variants", [])]
 
     @property
     def variant (self):
