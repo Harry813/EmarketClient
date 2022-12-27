@@ -6,6 +6,7 @@ app_name = 'kern'
 
 insite_api = [
     path('wishlist/', views.wishlist_api, name='wishlist'),
+    path('cart/', views.cart_api, name='cart'),
 ]
 
 urlpatterns = [
