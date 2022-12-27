@@ -179,21 +179,8 @@ class ProductVariant(RemoteModel):
         return super().update(base_url=base_url)
 
 
-class Cart(models.Model):
-    user = models.ForeignKey(verbose_name="客户", on_delete=models.CASCADE, to="User", blank=True, null=True)
-    created_at = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
-    updated_at = models.DateTimeField(verbose_name="更新时间", auto_now=True)
-
-    class Meta:
-        verbose_name = "购物车"
-        verbose_name_plural = "购物车"
-
-    def __str__ (self):
-        return f"{self.user.full_name}的购物车"
-
-
 class CartItem(models.Model):
-    cart = models.ForeignKey(verbose_name="购物车", on_delete=models.CASCADE, to="Cart")
+    user = models.ForeignKey(verbose_name="客户", on_delete=models.CASCADE, to="User")
     variant = models.ForeignKey(verbose_name="产品", on_delete=models.CASCADE, to="ProductVariant")
     quantity = models.IntegerField(verbose_name="数量", default=1)
     created_at = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
