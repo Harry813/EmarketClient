@@ -164,15 +164,16 @@ class Product(RemoteModel):
 class ProductVariant(RemoteModel):
     @property
     def price (self):
-        return self.raw_data.get("price", 0)
+        # float to decimal, 2 decimal places
+        return Decimal(self.data.get("price", 0)).quantize(Decimal("0.00"))
 
     @property
     def original_price (self):
-        return self.raw_data.get("original_price", 0)
+        return Decimal(self.data.get("original_price", 0)).quantize(Decimal("0.00"))
 
     @property
     def product (self):
-        return Product.objects.get(id=self.raw_data.get("product"))
+        return Product.objects.get(id=self.data.get("product"))
 
     def update (self, base_url="variant"):
         return super().update(base_url=base_url)
