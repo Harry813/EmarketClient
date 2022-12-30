@@ -51,7 +51,7 @@
                                             <td class="product_name"><a
                                                     href="{% url 'client:product' item.product.id %}">{{ item.product.name }}</a>
                                             </td>
-                                            <td class="product-price">£{{ item.variant.price }}</td>
+                                            <td class="product-price">{{ currency_symbol }}{{ item.variant.price }}</td>
                                             <td class="product_total"><a href="#">Add To Cart</a></td>
                                         </tr>
                                     {% empty %}

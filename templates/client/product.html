@@ -55,8 +55,8 @@
                         <form action="#">
                             <h1>{{ product.name }}</h1>
                             <div class="product_price">
-                                <span class="old_price">£{{ product.variant.original_price }}</span>
-                                <span class="current_price">£{{ product.variant.price }}</span>
+                                <span class="old_price">{{ currency_symbol }}{{ product.variant.original_price }}</span>
+                                <span class="current_price">{{ currency_symbol }}{{ product.variant.price }}</span>
                             </div>
                             <div class="product_desc">
                                 <p>{{ product.short_description }}</p>

@@ -100,8 +100,8 @@
                                                 <a href="{% url 'client:product' product_id=product.id %}">{{ product.name }}</a>
                                             </h3>
                                             <div class="price_box">
-                                                <span class="old_price">£{{ product.variant.original_price }}</span>
-                                                <span class="current_price">£{{ product.variant.price }}</span>
+                                                <span class="old_price">{{ currency_symbol }}{{ product.variant.original_price }}</span>
+                                                <span class="current_price">{{ currency_symbol }}{{ product.variant.price }}</span>
                                             </div>
                                             <div class="product_hover w-100">
                                                 {% comment %}
@@ -203,8 +203,8 @@
                                                 <p>{{ product.short_description }}</p>
                                             </div>
                                             <div class="price_box">
-                                                <span class="old_price">£{{ product.variant.original_price }}</span>
-                                                <span class="current_price">£{{ product.variant.price }}</span>
+                                                <span class="old_price">{{ currency_symbol }}{{ product.variant.original_price }}</span>
+                                                <span class="current_price">{{ currency_symbol }}{{ product.variant.price }}</span>
                                             </div>
 
                                             <div class="action_links">
@@ -327,8 +327,8 @@
                                             <h2>{{ product.name }}</h2>
                                         </div>
                                         <div class="modal_price mb-10">
-                                            <span class="old_price">£{{ product.variant.original_price }}</span>
-                                            <span class="current_price">£{{ product.variant.price }}</span>
+                                            <span class="old_price">{{ currency_symbol }}{{ product.variant.original_price }}</span>
+                                            <span class="current_price">{{ currency_symbol }}{{ product.variant.price }}</span>
                                         </div>
                                         <div class="see_all">
                                             <a href="{% url 'client:product' product_id=product.id %}">{% trans "更多详情" %}</a>

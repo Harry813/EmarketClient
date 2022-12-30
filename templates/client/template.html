@@ -221,8 +221,9 @@
                                 {# todo: 添加并修改购物车功能 #}
                                 {% if cart_count > 0 %}
                                     <a href="#"><i class="ion-android-cart"></i><span
-                                            class="cart_text_quantity"> £{{ cart_subtotal }}</span> <i
-                                            class="fa fa-angle-down"></i></a>
+                                            class="cart_text_quantity"> {{ currency_symbol }}{{ cart_subtotal }}</span>
+                                        <i
+                                                class="fa fa-angle-down"></i></a>
                                     <span class="cart_quantity">{{ cart_count }}</span>
                                 {% else %}
                                     <a href="#"><i class="ion-android-cart"></i> <i
