@@ -52,11 +52,11 @@
                                             <td class="product_name"><a
                                                     href="{% url 'client:product' product_id=item.product.id %}">{{ item.name }}</a>
                                             </td>
-                                            <td class="product-price">£{{ item.price }}</td>
+                                            <td class="product-price">{{ currency_symbol }}{{ item.price }}</td>
                                             <td class="product_quantity"><label>{% trans "数量" %}</label>
                                                 <input min="0" max="100" value="{{ item.quantity }}" type="number"
                                                        data-variant="{{ item.variant.id }}"></td>
-                                            <td class="product_total">£{{ item.total }}</td>
+                                            <td class="product_total">{{ currency_symbol }}{{ item.total }}</td>
                                         </tr>
                                     {% empty %}
                                         <tr>
@@ -77,34 +77,33 @@
                     <div class="row">
                         <div class="col-lg-6 col-md-6">
                             <div class="coupon_code left">
-                                <h3>Coupon</h3>
+                                <h3>{% trans "优惠券" %}</h3>
                                 <div class="coupon_inner">
-                                    <p>Enter your coupon code if you have one.</p>
-                                    <input placeholder="Coupon code" type="text">
-                                    <button type="button">Apply coupon</button>
+                                    <p>{% trans "如果你有优惠码请在这里填写" %}</p>
+                                    <input placeholder="{% trans '优惠码' %}" type="text" id="coupon_input">
+                                    <button type="button">{% trans "验证优惠码" %}</button>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-6 col-md-6">
                             <div class="coupon_code right">
-                                <h3>Cart Totals</h3>
+                                <h3>{% trans "购物车小结" %}</h3>
                                 <div class="coupon_inner">
                                     <div class="cart_subtotal">
-                                        <p>Subtotal</p>
-                                        <p class="cart_amount">£{{ cart_subtotal }}</p>
+                                        <p>{% trans "小计" %}</p>
+                                        <p class="cart_amount">{{ currency_symbol }}{{ cart_subtotal }}</p>
                                     </div>
                                     <div class="cart_subtotal ">
-                                        <p>Shipping</p>
-                                        <p class="cart_amount"><span>Flat Rate:</span> £255.00</p>
+                                        <p>{% trans "快递" %}</p>
+                                        <p class="cart_amount"> {{ currency_symbol }}10.00</p>
                                     </div>
-                                    <a href="#">Calculate shipping</a>
 
                                     <div class="cart_subtotal">
-                                        <p>Total</p>
-                                        <p class="cart_amount">£215.00</p>
+                                        <p>{% trans "总计" %}</p>
+                                        <p class="cart_amount">{{ currency_symbol }}{{ total }}</p>
                                     </div>
                                     <div class="checkout_btn">
-                                        <a href="#">{% trans "前往付款" %}</a>
+                                        <a href="#" id="checkout_button">{% trans "前往结算" %}</a>
                                     </div>
                                 </div>
                             </div>
@@ -120,7 +119,6 @@
 
 {% block js %}
     <script>
-        // 当#update_cart按钮被点击时
         $('#update_cart').click(function () {
             let inputs = $('input[data-variant]');
             let data = [];
@@ -154,5 +152,59 @@
                 }
             })
         });
+
+        // 当#checkout_button被点击，提交ajax POST申请，data格式应为
+        //{"items": [{"id": "xxxx-xxxx-xxxxxxxx (UUID as string)", "quantity": x(int)}, ...]
+        // "coupon": "xxxxxxx"(string, optional)}
+        $('#checkout_button').click(function (e) {
+            e.preventDefault();
+            // 弹出loading
+            let loading = notyf.open({
+                type: 'info',
+                message: '正在提交订单，请稍后...'
+            });
+            let inputs = $('input[data-variant]');
+            let items = [];
+            inputs.each(function () {
+                let variant = $(this).data('variant');
+                let quantity = $(this).val();
+                if (variant && quantity) {
+                    items.push({
+                        id: variant,
+                        quantity: quantity
+                    })
+                }
+            });
+
+            if (items.length === 0) {
+                notyf.error("{% trans '购物车为空，无法提交订单' %}");
+                $(this).attr('disabled', false);
+                return;
+            }
+
+            let coupon = $('#coupon_input').val();
+            let p_data = {
+                "items": items,
+                "coupon": coupon
+            };
+            $.ajax({
+                url: '{% url 'kern:checkout' %}',
+                method: 'post',
+                data: JSON.stringify(p_data),
+                contentType: 'application/json',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    console.log(data.id)
+                    let id = data.id;
+                    window.location.href = '{% url 'client:checkout' %}' + '?id=' + id;
+                },
+                error: function (data) {
+                    console.log(data)
+                    notyf.error(data["msg"]);
+                }
+            })
+        })
     </script>
 {% endblock %}
