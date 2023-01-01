@@ -1,0 +1,446 @@
+{% extends 'client/template.html' %}
+{% load widget_tweaks %}
+{% load i18n %}
+
+
+
+{% block content %}
+    <!--breadcrumbs area start-->
+    <div class="breadcrumbs_area">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="breadcrumb_content">
+                        <h3>{% trans "结算" %}</h3>
+                        <ul>
+                            <li><a href="{% url 'client:index' %}">{% trans "首页" %}</a></li>
+                            <li>></li>
+                            <li>{% trans "结算" %}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--breadcrumbs area end-->
+
+    <!--Checkout page section-->
+    <div class="Checkout_section" id="accordion">
+        <div class="container">
+            <div class="checkout_form">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6">
+                            <h3>{% trans "账单地址" %}</h3>
+                            <div class="row">
+                                <div class="col-lg-6 mb-20">
+                                    <label class="form-label" for="{{ form.billing_first_name.id_for_label }}">
+                                        {{ form.billing_first_name.label }}
+                                        {% if form.billing_first_name.field.required %}
+                                            <span style="color: red">*</span>
+                                        {% endif %}
+                                    </label>
+                                    {% render_field form.billing_first_name class="form-control" %}
+                                    <div>
+                                        {% if form.billing_first_name.errors %}
+                                            <p class="form-text"
+                                               style="color: red;">{{ form.billing_first_name.errors.0 }}</p>
+                                        {% elif form.billing_first_name.help_text %}
+                                            <p class="form-text text-muted">{{ form.billing_first_name.help_text }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 mb-20">
+                                    <label class="form-label" for="{{ form.billing_last_name.id_for_label }}">
+                                        {{ form.billing_last_name.label }}
+                                        {% if form.billing_last_name.field.required %}
+                                            <span style="color: red">*</span>
+                                        {% endif %}
+                                    </label>
+                                    {% render_field form.billing_last_name class="form-control" %}
+                                    <div>
+                                        {% if form.billing_last_name.errors %}
+                                            <p class="form-text"
+                                               style="color: red;">{{ form.billing_last_name.errors.0 }}</p>
+                                        {% elif form.billing_last_name.help_text %}
+                                            <p class="form-text text-muted">{{ form.billing_last_name.help_text }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="col-12 mb-20">
+                                    <label class="form-label" for="{{ form.billing_address_line1.id_for_label }}">
+                                        {{ form.billing_address_line1.label }}
+                                        {% if form.billing_address_line1.field.required %}
+                                            <span style="color: red">*</span>
+                                        {% endif %}
+                                    </label>
+                                    {% render_field form.billing_address_line1 class="form-control" %}
+                                    <div>
+                                        {% if form.billing_address_line1.errors %}
+                                            <p class="form-text"
+                                               style="color: red;">{{ form.billing_address_line1.errors.0 }}</p>
+                                        {% elif form.billing_address_line1.help_text %}
+                                            <p class="form-text text-muted">{{ form.billing_address_line1.help_text }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-20">
+                                    {% render_field form.billing_address_line2 class="form-control" %}
+                                    <div>
+                                        {% if form.billing_address_line2.errors %}
+                                            <p class="form-text"
+                                               style="color: red;">{{ form.billing_address_line2.errors.0 }}</p>
+                                        {% elif form.billing_address_line2.help_text %}
+                                            <p class="form-text text-muted">{{ form.billing_address_line2.help_text }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-20">
+                                    <label class="form-label" for="{{ form.billing_city.id_for_label }}">
+                                        {{ form.billing_city.label }}
+                                        {% if form.billing_city.field.required %}
+                                            <span style="color: red">*</span>
+                                        {% endif %}
+                                    </label>
+                                    {% render_field form.billing_city class="form-control" %}
+                                    <div>
+                                        {% if form.billing_city.errors %}
+                                            <p class="form-text"
+                                               style="color: red;">{{ form.billing_city.errors.0 }}</p>
+                                        {% elif form.billing_city.help_text %}
+                                            <p class="form-text text-muted">{{ form.billing_city.help_text }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-20">
+                                    <label class="form-label" for="{{ form.billing_state.id_for_label }}">
+                                        {{ form.billing_state.label }}
+                                        {% if form.billing_state.field.required %}
+                                            <span style="color: red">*</span>
+                                        {% endif %}
+                                    </label>
+                                    {% render_field form.billing_state class="form-control" %}
+                                    <div>
+                                        {% if form.billing_state.errors %}
+                                            <p class="form-text"
+                                               style="color: red;">{{ form.billing_state.errors.0 }}</p>
+                                        {% elif form.billing_state.help_text %}
+                                            <p class="form-text text-muted">{{ form.billing_state.help_text }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 mb-20">
+                                    <label class="form-label" for="{{ form.billing_country.id_for_label }}">
+                                        {{ form.billing_country.label }}
+                                        {% if form.billing_country.field.required %}
+                                            <span style="color: red">*</span>
+                                        {% endif %}
+                                    </label>
+                                    {% render_field form.billing_country class="form-control select2" %}
+                                    <div>
+                                        {% if form.billing_country.errors %}
+                                            <p class="form-text"
+                                               style="color: red;">{{ form.billing_country.errors.0 }}</p>
+                                        {% elif form.billing_country.help_text %}
+                                            <p class="form-text text-muted">{{ form.billing_country.help_text }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 mb-20">
+                                    <label class="form-label" for="{{ form.billing_zip_code.id_for_label }}">
+                                        {{ form.billing_zip_code.label }}
+                                        {% if form.billing_zip_code.field.required %}
+                                            <span style="color: red">*</span>
+                                        {% endif %}
+                                    </label>
+                                    {% render_field form.billing_zip_code class="form-control" %}
+                                    <div>
+                                        {% if form.billing_zip_code.errors %}
+                                            <p class="form-text"
+                                               style="color: red;">{{ form.billing_zip_code.errors.0 }}</p>
+                                        {% elif form.billing_zip_code.help_text %}
+                                            <p class="form-text text-muted">{{ form.billing_zip_code.help_text }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-20">
+                                    <label class="form-label" for="{{ form.billing_phone.id_for_label }}">
+                                        {{ form.billing_phone.label }}
+                                        {% if form.billing_phone.field.required %}
+                                            <span style="color: red">*</span>
+                                        {% endif %}
+                                    </label>
+                                    {% render_field form.billing_phone class="form-control" %}
+                                    <div>
+                                        {% if form.billing_phone.errors %}
+                                            <p class="form-text"
+                                               style="color: red;">{{ form.billing_phone.errors.0 }}</p>
+                                        {% elif form.billing_phone.help_text %}
+                                            <p class="form-text text-muted">{{ form.billing_phone.help_text }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-20">
+                                    <div class="form-check">
+                                        {% render_field form.ship_to_different_address type="checkbox" data-bs-toggle="collapse" data-bs-target="#collapsetwo" aria-controls="collapseOne" %}
+                                        <label class="form-check-label"
+                                               for="{{ form.ship_to_different_address.id_for_label }}"
+                                               data-bs-toggle="collapse" data-bs-target="#collapsetwo"
+                                               aria-controls="collapseOne">
+                                            {{ form.ship_to_different_address.label }}
+                                            {% if form.ship_to_different_address.field.required %}
+                                                <span style="color: red">*</span>
+                                            {% endif %}
+                                        </label>
+                                    </div>
+                                    <div>
+                                        {% if form.ship_to_different_address.errors %}
+                                            <p class="form-text"
+                                               style="color: red;">{{ form.ship_to_different_address.errors.0 }}</p>
+                                        {% elif form.ship_to_different_address.help_text %}
+                                            <p class="form-text text-muted">{{ form.ship_to_different_address.help_text }}</p>
+                                        {% endif %}
+                                    </div>
+
+                                    <div id="collapsetwo" class="collapse one" data-parent="#accordion">
+                                        <div class="row">
+                                            <div class="col-lg-6 mb-20">
+                                                <label class="form-label"
+                                                       for="{{ form.shipping_first_name.id_for_label }}">
+                                                    {{ form.shipping_first_name.label }}
+                                                    {% if form.shipping_first_name.field.required %}
+                                                        <span style="color: red">*</span>
+                                                    {% endif %}
+                                                </label>
+                                                {% render_field form.shipping_first_name class="form-control" %}
+                                                <div>
+                                                    {% if form.shipping_first_name.errors %}
+                                                        <p class="form-text"
+                                                           style="color: red;">{{ form.shipping_first_name.errors.0 }}</p>
+                                                    {% elif form.shipping_first_name.help_text %}
+                                                        <p class="form-text text-muted">{{ form.shipping_first_name.help_text }}</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 mb-20">
+                                                <label class="form-label"
+                                                       for="{{ form.shipping_last_name.id_for_label }}">
+                                                    {{ form.shipping_last_name.label }}
+                                                    {% if form.shipping_last_name.field.required %}
+                                                        <span style="color: red">*</span>
+                                                    {% endif %}
+                                                </label>
+                                                {% render_field form.shipping_last_name class="form-control" %}
+                                                <div>
+                                                    {% if form.shipping_last_name.errors %}
+                                                        <p class="form-text"
+                                                           style="color: red;">{{ form.shipping_last_name.errors.0 }}</p>
+                                                    {% elif form.shipping_last_name.help_text %}
+                                                        <p class="form-text text-muted">{{ form.shipping_last_name.help_text }}</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12 mb-20">
+                                                <label class="form-label"
+                                                       for="{{ form.shipping_address_line1.id_for_label }}">
+                                                    {{ form.shipping_address_line1.label }}
+                                                    {% if form.shipping_address_line1.field.required %}
+                                                        <span style="color: red">*</span>
+                                                    {% endif %}
+                                                </label>
+                                                {% render_field form.shipping_address_line1 class="form-control" %}
+                                                <div>
+                                                    {% if form.shipping_address_line1.errors %}
+                                                        <p class="form-text"
+                                                           style="color: red;">{{ form.shipping_address_line1.errors.0 }}</p>
+                                                    {% elif form.shipping_address_line1.help_text %}
+                                                        <p class="form-text text-muted">{{ form.shipping_address_line1.help_text }}</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-12 mb-20">
+                                                {% render_field form.shipping_address_line2 class="form-control" %}
+                                                <div>
+                                                    {% if form.shipping_address_line2.errors %}
+                                                        <p class="form-text"
+                                                           style="color: red;">{{ form.shipping_address_line2.errors.0 }}</p>
+                                                    {% elif form.shipping_address_line2.help_text %}
+                                                        <p class="form-text text-muted">{{ form.shipping_address_line2.help_text }}</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-12 mb-20">
+                                                <label class="form-label" for="{{ form.shipping_city.id_for_label }}">
+                                                    {{ form.shipping_city.label }}
+                                                    {% if form.shipping_city.field.required %}
+                                                        <span style="color: red">*</span>
+                                                    {% endif %}
+                                                </label>
+                                                {% render_field form.shipping_city class="form-control" %}
+                                                <div>
+                                                    {% if form.shipping_city.errors %}
+                                                        <p class="form-text"
+                                                           style="color: red;">{{ form.shipping_city.errors.0 }}</p>
+                                                    {% elif form.shipping_city.help_text %}
+                                                        <p class="form-text text-muted">{{ form.shipping_city.help_text }}</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 mb-20">
+                                                <label class="form-label" for="{{ form.shipping_state.id_for_label }}">
+                                                    {{ form.shipping_state.label }}
+                                                    {% if form.shipping_state.field.required %}
+                                                        <span style="color: red">*</span>
+                                                    {% endif %}
+                                                </label>
+                                                {% render_field form.shipping_state class="form-control" %}
+                                                <div>
+                                                    {% if form.shipping_state.errors %}
+                                                        <p class="form-text"
+                                                           style="color: red;">{{ form.shipping_state.errors.0 }}</p>
+                                                    {% elif form.shipping_state.help_text %}
+                                                        <p class="form-text text-muted">{{ form.shipping_state.help_text }}</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 mb-20">
+                                                <label class="form-label"
+                                                       for="{{ form.shipping_country.id_for_label }}">
+                                                    {{ form.shipping_country.label }}
+                                                    {% if form.shipping_country.field.required %}
+                                                        <span style="color: red">*</span>
+                                                    {% endif %}
+                                                </label>
+                                                {% render_field form.shipping_country class="form-control" %}
+                                                <div>
+                                                    {% if form.shipping_country.errors %}
+                                                        <p class="form-text"
+                                                           style="color: red;">{{ form.shipping_country.errors.0 }}</p>
+                                                    {% elif form.shipping_country.help_text %}
+                                                        <p class="form-text text-muted">{{ form.shipping_country.help_text }}</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-12 mb-20">
+                                                <label class="form-label" for="{{ form.shipping_phone.id_for_label }}">
+                                                    {{ form.shipping_phone.label }}
+                                                    {% if form.shipping_phone.field.required %}
+                                                        <span style="color: red">*</span>
+                                                    {% endif %}
+                                                </label>
+                                                {% render_field form.shipping_phone class="form-control" %}
+                                                <div>
+                                                    {% if form.shipping_phone.errors %}
+                                                        <p class="form-text"
+                                                           style="color: red;">{{ form.shipping_phone.errors.0 }}</p>
+                                                    {% elif form.shipping_phone.help_text %}
+                                                        <p class="form-text text-muted">{{ form.shipping_phone.help_text }}</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="order-notes">
+                                        <label class="form-label" for="{{ form.note.id_for_label }}">
+                                            {{ form.note.label }}
+                                            {% if form.note.field.required %}
+                                                <span style="color: red">*</span>
+                                            {% endif %}
+                                        </label>
+                                        {% render_field form.note class="form-control" %}
+                                        <div>
+                                            {% if form.note.errors %}
+                                                <p class="form-text" style="color: red;">{{ form.note.errors.0 }}</p>
+                                            {% elif form.note.help_text %}
+                                                <p class="form-text text-muted">{{ form.note.help_text }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <h3>{% trans "您的订单" %}</h3>
+                            <div class="order_table table-responsive">
+                                <table>
+                                    <thead>
+                                    <tr>
+                                        <th>{% trans "产品" %}</th>
+                                        <th>{% trans "总结" %}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for item in order.items %}
+                                        <tr>
+                                            <td> {{ item.name }} <strong> × {{ item.quantity }}</strong></td>
+                                            <td> {{ currency_symbol }}{{ item.subtotal }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                    <tr>
+                                        <th>{% trans "小结" %}</th>
+                                        <td>{{ currency_symbol }}{{ order.subtotal }}</td>
+                                    </tr>
+                                    {% if order.discount != 0 %}
+                                        <tr>
+                                            <th>{% trans "折扣" %}</th>
+                                            <td>{{ currency_symbol }}{{ order.discount }}</td>
+                                        </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <th>{% trans "运费" %}</th>
+                                        <td><strong>{{ currency_symbol }}{{ order.shipping }}</strong></td>
+                                    </tr>
+                                    <tr class="order_total">
+                                        <th>{% trans "总计" %}</th>
+                                        <td><strong>{{ currency_symbol }}{{ order.total }}</strong></td>
+                                    </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div class="payment_method">
+                                <div class="panel-default mb-20">
+                                    <label class="form-label" for="{{ form.payment_method.id_for_label }}">
+                                        {{ form.payment_method.label }}
+                                        {% if form.payment_method.field.required %}
+                                            <span style="color: red">*</span>
+                                        {% endif %}
+                                    </label>
+                                    {% render_field form.payment_method class="form-control select2" %}
+                                    <div>
+                                        {% if form.payment_method.errors %}
+                                            <p class="form-text"
+                                               style="color: red;">{{ form.payment_method.errors.0 }}</p>
+                                        {% elif form.payment_method.help_text %}
+                                            <p class="form-text text-muted">{{ form.payment_method.help_text }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div>
+                                    {% blocktrans %}
+                                        <p><strong>下单须知：</strong></p>
+                                        <p>-
+                                            下单前请再次确认您的账单地址、发货地址信息等。错误的输入可能会导致商品无法即时送达。</p>
+                                    {% endblocktrans %}
+                                </div>
+                                <div class="mb-20">
+                                    {{ form.non_field_errors }}
+                                </div>
+                                <div class="order_button">
+                                    <button type="submit">{% trans "前往付款" %}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--Checkout page section end-->
+{% endblock %}
