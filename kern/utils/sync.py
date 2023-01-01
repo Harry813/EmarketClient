@@ -4,7 +4,7 @@ from kern.utils.core import send_request
 
 
 def sync_images ():
-    response = send_request(f"/image/?mode=sync", "GET")
+    response = send_request("/image/", "GET", params={"mode": "sync"})
     if response.status_code == 200:
         image_all = Image.objects.all().values_list("id", flat=True)
         for img in response.json():
@@ -18,7 +18,7 @@ def sync_images ():
 
 
 def sync_products ():
-    response = send_request("/product/?mode=sync", "GET")
+    response = send_request("/product/", "GET", params={"mode": "sync"})
     if response.status_code == 200:
         for product in Product.objects.all():
             if product.id not in response.json():
@@ -37,7 +37,7 @@ def sync_products ():
 
 
 def sync_variants ():
-    response = send_request("/variant/?mode=sync", "GET")
+    response = send_request("/variant/", "GET", params={"mode": "sync"})
     if response.status_code == 200:
         for variant in ProductVariant.objects.all():
             if variant.id not in response.json():
