@@ -39,8 +39,8 @@ def create_user (**kwargs):
     )
     user.set_password(password)
     response = send_request("/auth/register/", "POST",
-                            {"username": username, "email": email,
-                             "first_name": first_name, "last_name": last_name})
+                            data={"username": username, "email": email,
+                                  "first_name": first_name, "last_name": last_name})
     if response.status_code == 201:
         user.uuid = response.json()["id"]
         user.save()
@@ -52,7 +52,7 @@ def create_user (**kwargs):
 def login_user (request, username, password):
     user = authenticate(request, username=username, password=password)
     if user is not None:
-        response = send_request("/auth/login/", "POST", {"id": str(user.uuid)})
+        response = send_request("/auth/login/", "POST", params={"id": str(user.uuid)})
         if response.status_code == 200:
             login(request, user)
             return user
