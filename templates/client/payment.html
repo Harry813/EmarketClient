@@ -1,0 +1,107 @@
+{% extends "client/template.html" %}
+{% load i18n %}
+
+{% block css %}
+    <style>
+        tbody tr:hover td.no_hover, td[colspan] {
+            box-shadow: none !important; /* or whatever color you want */
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="customer_login">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 offset-md-3 mt-5">
+                    <h2 class="text-center">{% trans 'Payment | 付款' %}</h2>
+                    <table class="table table-hover table-borderless w-100 fs-5 mt-5">
+                        <tr>
+                            <td>{% trans "订单编号" %}</td>
+                            <td>{{ order_id }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "金额" %}</td>
+                            <td>
+                                {% if to_currency is not None and to_amount is not None %}
+                                    <span>{{ from_amount }} {{ from_currency }}</span>
+                                    <span><i
+                                            class="fa-solid fa-right-left"></i> <strong>{{ to_amount }} {{ to_currency }}</strong></span>
+                                {% else %}
+                                    <span><strong>{{ from_amount }} {{ from_currency }}</strong></span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="no_hover"></td>
+                        </tr>
+                        <tr>
+                            <td class="no_hover"></td>
+                        </tr>
+                        {% if type == "UKBANKTRAN" %}
+                            <tr class="table-info">
+                                <td colspan="2">
+                                    {% trans "请直接向下述账户进行银行转账，我们的员工会在24个小时内进行核实" %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>{% trans "银行" %}</td>
+                                <td>{{ bank_name }}</td>
+                            </tr>
+                            <tr>
+                                <td>{% trans "持卡人姓名" %}</td>
+                                <td>{{ account_name }}</td>
+                            </tr>
+                            <tr>
+                                <td>{% trans "账号类型" %}</td>
+                                <td>{% if account_type == "PERSONAL" %}{% trans "个人" %}{% else %}
+                                    {% trans "商务" %}{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <td>Account No.</td>
+                                <td>{{ account_number }}</td>
+                            </tr>
+                            <tr>
+                                <td>Sort code</td>
+                                <td>{{ sort_code }}</td>
+                            </tr>
+                            <tr>
+                                <td>{% trans "Reference" %}</td>
+                                <td>{{ reference }}</td>
+                            </tr>
+                            <tr class="table-info">
+                                <td colspan="2">
+                                    {% trans "如果可以，请务必携带reference，这可以帮助我们更快地找到您的付款" %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="no_hover"></td>
+                            </tr>
+                            <tr>
+                                <td class="no_hover"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">{% trans "转账前请确认输入的信息的准确，错误的信息输入可能会导致您的钱款无法被找回" %}</td>
+                            </tr>
+                        {% elif type in ["API", "CRYPTOTRAN"] %}
+                            <tr class="table-info">
+                                <td colspan="2">{% blocktrans %}
+                                    请向下述钱包地址进行转账恰好 {{ to_amount }} {{ to_currency }} 的金额
+                                {% endblocktrans %}</td>
+                            </tr>
+                            <tr>
+                                <td>{% trans "钱包地址" %}</td>
+                                <td>{{ pay_address }}</td>
+                            </tr>
+                        {% endif %}
+                    </table>
+                    <div class="d-flex justify-content-center mt-5">
+                        <a href="{% url 'client:pay_finish' order_id %}" class="btn btn-success py-3 px-5 text-center">
+                            <i class="fa-solid fa-check"></i> 我已转账
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
