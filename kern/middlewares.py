@@ -10,8 +10,3 @@ from kern.utils.core import send_request
 class ClientMiddleware(MiddlewareMixin):
     def process_request (self, request):
         v_record(request)
-        if request.path.startswith("/api/"):
-            response = send_request(request.path, request.method, request.body)
-            return response
-        else:
-            return None
