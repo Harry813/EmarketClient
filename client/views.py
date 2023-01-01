@@ -1,9 +1,7 @@
-import json
-
 from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -146,4 +144,121 @@ def cart_view (request):
         "active_page": "user",
         **get_client_params(request=request, page_title=_("购物车")),
     }
+    param.update({
+        "total": param["cart_subtotal"] + 10,
+    }),
     return render(request, 'client/cart.html', param)
+
+
+@login_required(login_url="client:login")
+def checkout_view (request):
+    param = {
+        "active_page": "user",
+        **get_client_params(request=request, page_title=_("结账")),
+    }
+
+    # todo: 用户信息、地址自动填充
+
+    order_id = request.GET.get("id", None)
+    if order_id:
+        order = Order.objects.get(id=order_id)
+    else:
+        order = Order.objects.get(user=request.user)
+    param["order"] = order
+
+    if request.method == "POST":
+        form = CheckoutForm(request.POST)
+        if form.is_valid():
+            data = {
+                "first_name": form.cleaned_data.get("billing_first_name"),
+                "last_name": form.cleaned_data.get("billing_last_name"),
+                "phone": form.cleaned_data.get("billing_phone"),
+                "address_line1": form.cleaned_data.get("billing_address_line1"),
+                "address_line2": form.cleaned_data.get("billing_address_line2"),
+                "city": form.cleaned_data.get("billing_city"),
+                "state": form.cleaned_data.get("billing_state"),
+                "country": form.cleaned_data.get("billing_country"),
+                "zip_code": form.cleaned_data.get("billing_zip_code"),
+            }
+
+            response = send_request("/address/", "POST", data=data)
+
+            if response.status_code == 201:
+                billing_address_id = response.json().get("id")
+                Address.objects.create(id=billing_address_id)
+            elif response.status_code == 200:
+                billing_address_id = response.json().get("id")
+            else:
+                return HttpResponseBadRequest()
+
+            shipping_address_id = None
+            if form.cleaned_data.get("ship_to_different_address"):
+                data = {
+                    "first_name": form.cleaned_data.get("shipping_first_name"),
+                    "last_name": form.cleaned_data.get("shipping_last_name"),
+                    "phone": form.cleaned_data.get("shipping_phone"),
+                    "address_line1": form.cleaned_data.get("shipping_address_line1"),
+                    "address_line2": form.cleaned_data.get("shipping_address_line2"),
+                    "city": form.cleaned_data.get("shipping_city"),
+                    "state": form.cleaned_data.get("shipping_state"),
+                    "country": form.cleaned_data.get("shipping_country"),
+                    "zip_code": form.cleaned_data.get("shipping_zip_code"),
+                }
+                response = send_request("/address/", "POST", data=data)
+                if response.status_code == 201:
+                    shipping_address_id = response.json().get("id")
+                    Address.objects.create(id=shipping_address_id)
+                elif response.status_code == 200:
+                    shipping_address_id = response.json().get("id")
+                else:
+                    form.add_error(None, ValidationError(_("地址验证失败，请重试"), code="CheckoutFailed"))
+
+            data = {
+                "order": order.id,
+                "payment_method": form.cleaned_data.get("payment_method"),
+                "billing_address": billing_address_id,
+                "shipping_address": shipping_address_id,
+                "amount": order.total,
+                "currency": "GBP",
+            }
+            response = send_request("/pay/", "POST", data=data)
+            if response.status_code == 200:
+                return redirect("client:pay", order_id=order.id)
+            else:
+                form.add_error(None, "信息拉取失败，请稍后重试")
+
+        else:
+            form = CheckoutForm(request.POST)
+    else:
+        form = CheckoutForm()
+
+    param["form"] = form
+    return render(request, 'client/checkout.html', param)
+
+
+@login_required(login_url="client:login")
+def pay_view (request, order_id):
+    param = {
+        "active_page": "user",
+        "order_id": order_id,
+        **get_client_params(request=request, page_title=_("支付")),
+    }
+
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    # todo: 检查订单状态，并执行相应跳转
+    response = send_request("/pay/", "GET", params={"id": order.id, "mode": "pay"})
+    if response.status_code == 200:
+        param.update(response.json())
+    else:
+        return HttpResponseBadRequest(response)
+    return render(request, 'client/payment.html', param)
+
+
+@login_required(login_url="client:login")
+def pay_finish (request, order_id):
+    u = User.objects.get(id=request.user.id)
+    CartItem.objects.filter(user=u).delete()
+
+    # todo: 向服务器发出支付完成请求
+
+    return redirect("client:index")
