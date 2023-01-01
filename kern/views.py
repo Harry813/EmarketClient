@@ -39,7 +39,6 @@ def cart_api (request):
         total_price = sum([item.variant.price * item.quantity for item in items])
         return Response({"items": items, "total_price": total_price}, status=HTTP_200_OK)
     elif request.method == "POST":
-        # 至多一件商品
         user = User.objects.get(pk=request.user.pk)
         variant_id = request.data.get("id", None)
         quantity = request.data.get("quantity")
@@ -86,3 +85,45 @@ def cart_api (request):
             return Response({"ERR": _("无效的请求")}, status=HTTP_400_BAD_REQUEST)
         CartItem.objects.filter(user=user, variant_id=variant_id).delete()
         return Response({"msg": _('删除成功，1.5秒后刷新页面')}, status=HTTP_200_OK)
+
+
+@csrf_exempt
+@api_view(['POST'])
+def checkout_api (request):
+    if request.method == "POST":
+        data = request.data
+        user = User.objects.get(pk=request.user.pk)
+
+        items = request.data.get("items", None)
+        if items is None:
+            return Response({"msg": _("无效的请求")}, status=HTTP_400_BAD_REQUEST)
+        for item in items:
+            variant_id = item.get("id", None)
+            quantity = item.get("quantity", None)
+            if variant_id is None or quantity is None:
+                return Response({"msg": _("无效的请求")}, status=HTTP_400_BAD_REQUEST)
+
+            obj, status = CartItem.objects.get_or_create(user=user, variant_id=variant_id)
+            if not status:
+                obj.quantity = quantity
+                obj.save()
+
+        coupon = data.get("coupon", "")
+        if coupon != "":
+            response = send_request("/coupon/validate/", "GET", params={"code": coupon})
+            if response.status_code != 200:
+                return Response({"msg": _("优惠券无效")}, status=HTTP_400_BAD_REQUEST)
+
+        new_data = {
+            "user": str(User.objects.get(pk=request.user.pk).uuid),
+            "items": items,
+            "coupon": coupon,
+        }
+
+        response = send_request('/checkout/', "POST", data=new_data, is_json=True)
+        if response.status_code == 200:
+            order_id = response.json().get("id", None)
+            Order.objects.get_or_create(id=order_id, user=user, is_active=True)
+            return Response({"id": order_id}, status=HTTP_200_OK)
+        else:
+            return Response(response, status=HTTP_400_BAD_REQUEST)
