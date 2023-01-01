@@ -18,11 +18,12 @@
           integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
-    <!-- Main Style CSS -->
-    <link rel="stylesheet" href="{% static 'client/css/style.css' %}">
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"/>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+    <!-- Main Style CSS -->
+    <link rel="stylesheet" href="{% static 'client/css/style.css' %}">
+    {% block css %}{% endblock %}
 
     <!--modernizr min js here-->
     <script src="{% static 'client/js/vendor/modernizr-3.7.1.min.js' %}"></script>
@@ -62,6 +63,15 @@
     const notyf = new Notyf({
         duration: 1500,
     });
+
+    $(document).ready(function () {
+        $(".select2").select2({
+            width: 'resolve',
+            theme: "bootstrap-5",
+            minimumResultsForSearch: Infinity,
+        });
+    })
+
     $(document).on('click', 'a.add_wishlist, button.add_wishlist', function (e) {
         e.preventDefault();
         let $this = $(this);
