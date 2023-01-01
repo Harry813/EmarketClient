@@ -214,7 +214,7 @@ class ProductVariant(RemoteModel):
 class CartItem(models.Model):
     user = models.ForeignKey(verbose_name="客户", on_delete=models.CASCADE, to="User")
     variant = models.ForeignKey(verbose_name="产品", on_delete=models.CASCADE, to="ProductVariant")
-    quantity = models.IntegerField(verbose_name="数量", default=1)
+    quantity = models.PositiveSmallIntegerField(verbose_name="数量", default=1)
     created_at = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name="更新时间", auto_now=True)
 
