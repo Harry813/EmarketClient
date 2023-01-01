@@ -12,7 +12,6 @@ def send_request (url, method, headers=None, is_json=False, **kwargs):
     :param is_json:
     :param url: url path to send request (e.g. /path/to/api)
     :param method: request method ["GET", "POST", "PUT", "DELETE"], case insensitive
-    :param data: data to send in format of dictionary, required by POST and PUT
     :param headers: headers to send
     """
     method = method.upper()
