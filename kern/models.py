@@ -283,3 +283,40 @@ class WishlistItem(models.Model):
     class Meta:
         verbose_name = "心愿单项"
         verbose_name_plural = "心愿单项"
+
+
+class Order(RemoteModel):
+    user = models.ForeignKey(verbose_name="客户", on_delete=models.CASCADE, to="User")
+    is_active = models.BooleanField(verbose_name="是否激活", default=True)
+
+    def update (self, base_url="order"):
+        return super().update(base_url=base_url)
+
+    def __str__ (self):
+        return f"ORD #{str(self.id)[-6:]}"
+
+    @property
+    def items (self):
+        return self.data.get("items", [])
+
+    @property
+    def subtotal (self):
+        return Decimal(self.data.get("subtotal", 0)).quantize(Decimal("0.00"))
+
+    @property
+    def shipping (self):
+        return Decimal(self.data.get("shipping", 0)).quantize(Decimal("0.00"))
+
+    @property
+    def discount (self):
+        return Decimal(self.data.get("discount", 0)).quantize(Decimal("0.00"))
+
+    @property
+    def total (self):
+        return Decimal(self.data.get("total", 0)).quantize(Decimal("0.00"))
+
+    def save (self, *args, **kwargs):
+        # each user can only have one active order
+        if self.is_active:
+            Order.objects.filter(user=self.user, is_active=True).update(is_active=False)
+        super().save(*args, **kwargs)
