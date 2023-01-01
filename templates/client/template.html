@@ -208,6 +208,8 @@
                     </div>
                     <div class="col-lg-5 col-md-7 col-6">
                         <div class="middel_right">
+                            {% comment %}
+                            todo: 商品搜索
                             <div class="search_btn">
                                 <a href="#"><i class="ion-ios-search-strong"></i></a>
                                 <div class="dropdown_search">
@@ -216,9 +218,8 @@
                                         <button type="submit"><i class="ion-ios-search-strong"></i></button>
                                     </form>
                                 </div>
-                            </div>
+                            </div>{% endcomment %}
                             <div class="cart_link">
-                                {# todo: 添加并修改购物车功能 #}
                                 {% if cart_count > 0 %}
                                     <a href="#"><i class="ion-android-cart"></i><span
                                             class="cart_text_quantity"> {{ currency_symbol }}{{ cart_subtotal }}</span>
