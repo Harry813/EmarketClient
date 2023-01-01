@@ -94,13 +94,45 @@ class UserVisitRecord(models.Model):
         return f"{self.cust}[{self.ip}] @ {self.visited_at}"
 
 
-class Address(models.Model):
-    address_line1 = models.CharField(verbose_name="地址1", max_length=255)
-    address_line2 = models.CharField(verbose_name="地址2", max_length=255, blank=True, null=True)
-    city = models.CharField(verbose_name="城市", max_length=255)
-    state = models.CharField(verbose_name="州", max_length=255)
-    country = models.CharField(verbose_name="国家", max_length=255)
-    zip_code = models.CharField(verbose_name="邮编", max_length=255)
+class Address(RemoteModel):
+    def update (self, base_url="address"):
+        return super().update(base_url)
+
+    @property
+    def first_name (self):
+        return self.data.get("first_name", "")
+
+    @property
+    def last_name (self):
+        return self.data.get("last_name", "")
+
+    @property
+    def full_name (self):
+        return self.first_name + self.last_name
+
+    @property
+    def address_line1 (self):
+        return self.data.get("address_line1", "")
+
+    @property
+    def address_line2 (self):
+        return self.data.get("address_line2", "")
+
+    @property
+    def city (self):
+        return self.data.get("city", "")
+
+    @property
+    def state (self):
+        return self.data.get("state", "")
+
+    @property
+    def country (self):
+        return self.data.get("country", "")
+
+    @property
+    def zip_code (self):
+        return self.data.get("zip_code", "")
 
 
 class Product(RemoteModel):
