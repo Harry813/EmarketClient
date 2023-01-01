@@ -66,9 +66,11 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="cart_submit">
-                                <button id="update_cart" type="button">{% trans "更新购物车" %}</button>
-                            </div>
+                            {% if cart %}
+                                <div class="cart_submit">
+                                    <button id="update_cart" type="button">{% trans "更新购物车" %}</button>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -85,29 +87,31 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-6 col-md-6">
-                            <div class="coupon_code right">
-                                <h3>{% trans "购物车小结" %}</h3>
-                                <div class="coupon_inner">
-                                    <div class="cart_subtotal">
-                                        <p>{% trans "小计" %}</p>
-                                        <p class="cart_amount">{{ currency_symbol }}{{ cart_subtotal }}</p>
-                                    </div>
-                                    <div class="cart_subtotal ">
-                                        <p>{% trans "快递" %}</p>
-                                        <p class="cart_amount"> {{ currency_symbol }}10.00</p>
-                                    </div>
+                        {% if cart %}
+                            <div class="col-lg-6 col-md-6">
+                                <div class="coupon_code right">
+                                    <h3>{% trans "购物车小结" %}</h3>
+                                    <div class="coupon_inner">
+                                        <div class="cart_subtotal">
+                                            <p>{% trans "小计" %}</p>
+                                            <p class="cart_amount">{{ currency_symbol }}{{ cart_subtotal }}</p>
+                                        </div>
+                                        <div class="cart_subtotal ">
+                                            <p>{% trans "快递" %}</p>
+                                            <p class="cart_amount"> {{ currency_symbol }}10.00</p>
+                                        </div>
 
-                                    <div class="cart_subtotal">
-                                        <p>{% trans "总计" %}</p>
-                                        <p class="cart_amount">{{ currency_symbol }}{{ total }}</p>
-                                    </div>
-                                    <div class="checkout_btn">
-                                        <a href="#" id="checkout_button">{% trans "前往结算" %}</a>
+                                        <div class="cart_subtotal">
+                                            <p>{% trans "总计" %}</p>
+                                            <p class="cart_amount">{{ currency_symbol }}{{ total }}</p>
+                                        </div>
+                                        <div class="checkout_btn">
+                                            <a href="#" id="checkout_button">{% trans "前往结算" %}</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        {% endif %}
                     </div>
                 </div>
                 <!--coupon code area end-->
