@@ -33,7 +33,7 @@ class RemoteModel(models.Model):
 
     @property
     def data (self):
-        if self.is_expired:
+        if self.is_expired or self.raw_data == {}:
             self.update()
         return self.raw_data
 
