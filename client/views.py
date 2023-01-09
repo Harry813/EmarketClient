@@ -261,4 +261,15 @@ def pay_finish (request, order_id):
 
     # todo: 向服务器发出支付完成请求
 
-    return redirect("client:index")
+@login_required(login_url="client:login")
+def profile_view (request):
+    param = {
+        "active_page": "user",
+        **get_client_params(request=request, page_title=_("个人信息")),
+    }
+
+    u = User.objects.get(id=request.user.id)
+    orders = Order.objects.filter(user=u, )
+    param["orders"] = orders
+
+    return render(request, 'client/profile.html', param)

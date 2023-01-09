@@ -17,6 +17,8 @@ urlpatterns = [
     path('pay/<str:order_id>/', views.pay_view, name='pay'),
     path('pay/finish/<str:order_id>/', views.pay_finish, name='pay_finish'),
 
+    path('profile/', views.profile_view, name='profile'),
+
     re_path(r'login/$', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('register/', views.register_view, name='register'),
