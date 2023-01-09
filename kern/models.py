@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils.translation import gettext as _
 
 from kern.utils.core import send_request
 
@@ -286,6 +287,16 @@ class WishlistItem(models.Model):
 
 
 class Order(RemoteModel):
+    STATUS = {
+        "CREATED": _("已创建"),
+        "PAID": _("已付款"),
+        "PROCESSING": _("处理中"),
+        "UNPAID": _("逾期未付款"),
+        "CONFIRMED": _("仓库确认"),
+        "SHIPPED": _("已发货"),
+        "COMPLETED": _("已完成"),
+        "CANCELLED": _("已取消")
+    }
     user = models.ForeignKey(verbose_name="客户", on_delete=models.CASCADE, to="User")
     is_active = models.BooleanField(verbose_name="是否激活", default=True)
 
@@ -298,6 +309,10 @@ class Order(RemoteModel):
     @property
     def items (self):
         return self.data.get("items", [])
+
+    @property
+    def quantity (self):
+        return sum([item["quantity"] for item in self.items])
 
     @property
     def subtotal (self):
@@ -314,6 +329,20 @@ class Order(RemoteModel):
     @property
     def total (self):
         return Decimal(self.data.get("total", 0)).quantize(Decimal("0.00"))
+
+    @property
+    def date (self):
+        created_at = self.data.get("created_at")
+        return created_at.split("T")[0]
+
+    @property
+    def status (self):
+        s = self.data.get("status")
+        return self.STATUS.get(s, s)
+
+    @property
+    def short_id (self):
+        return str(self.id)[-6:]
 
     def save (self, *args, **kwargs):
         # each user can only have one active order
