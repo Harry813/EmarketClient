@@ -83,20 +83,28 @@
                             <tr>
                                 <td colspan="2">{% trans "转账前请确认输入的信息的准确，错误的信息输入可能会导致您的钱款无法被找回" %}</td>
                             </tr>
-                        {% elif type in ["API", "CRYPTOTRAN"] %}
+                        {% elif type == "API" or type == "CRYPTOTRAN" %}
                             <tr class="table-info">
                                 <td colspan="2">{% blocktrans %}
-                                    请向下述钱包地址进行转账恰好 {{ to_amount }} {{ to_currency }} 的金额
+                                    请向下述钱包地址进行转账 {{ to_amount }} {{ to_currency }} 的金额（不包含手续费）
                                 {% endblocktrans %}</td>
                             </tr>
                             <tr>
                                 <td>{% trans "钱包地址" %}</td>
                                 <td>{{ pay_address }}</td>
                             </tr>
+                            <tr>
+                                <td>{% trans "网络" %}</td>
+                                <td>{{ network }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">{% trans "转账前请确认输入的信息的准确，错误的信息输入可能会导致您的钱款无法被找回" %}</td>
+                            </tr>
                         {% endif %}
                     </table>
                     <div class="d-flex justify-content-center mt-5">
-                        <a href="{% url 'client:pay_finish' order_id %}" class="btn btn-success py-3 px-5 text-center">
+                        <a href="{% url 'client:pay_finish' order_id %}" id="pay_success"
+                           class="btn btn-success py-3 px-5 text-center">
                             <i class="fa-solid fa-check"></i> 我已转账
                         </a>
                     </div>
