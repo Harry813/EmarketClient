@@ -1,0 +1,79 @@
+{% extends "client/template.html" %}
+{% load i18n %}
+
+{% block content %}
+    <!--breadcrumbs area start-->
+    <div class="breadcrumbs_area">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="breadcrumb_content">
+                        <h3>{% trans "我的账户" %}</h3>
+                        <ul>
+                            <li><a href="index.html">{% trans "首页" %}</a></li>
+                            <li>></li>
+                            <li>{% trans "我的账户" %}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--breadcrumbs area end-->
+
+    <!-- my account start  -->
+    <section class="main_content_area">
+        <div class="container">
+            <div class="account_dashboard">
+                <div class="row">
+                    <div class="col-sm-12 col-md-3 col-lg-3">
+                        <!-- Nav tabs -->
+                        <div class="dashboard_tab_button">
+                            <ul role="tablist" class="nav flex-column dashboard-list">
+                                <li><a href="#orders" data-bs-toggle="tab"
+                                       class="nav-link active">{% trans "订单" %}</a></li>
+                                {# <li><a href="#downloads" data-bs-toggle="tab" class="nav-link">Downloads</a></li>#}
+                                <li><a href="{% url 'client:logout' %}" class="nav-link">{% trans "登出" %}</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-9 col-lg-9">
+                        <!-- Tab panes -->
+                        <div class="tab-content dashboard_content">
+                            <div class="tab-pane fade show active" id="orders">
+                                <h3>Orders</h3>
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        {# todo: 更换为datatable #}
+                                        <thead>
+                                        <tr>
+                                            <th>{% trans "单号" %}</th>
+                                            <th>{% trans "日期" %}</th>
+                                            <th>{% trans "状态" %}</th>
+                                            <th>{% trans "概要" %}</th>
+                                            <th>{% trans "操作" %}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for order in orders %}
+                                            <tr>
+                                                <td>#{{ order.short_id|upper }}</td>
+                                                <td>{{ order.date }}</td>
+                                                <td>{{ order.status }}</td>
+                                                <td>{{ order.quantity }}{% trans "件物品" %},
+                                                    {{ currency_symbol }}{{ order.total }}</td>
+                                                <td><a href="cart.html" class="view">view</a></td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- my account end   -->
+{% endblock %}
