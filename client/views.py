@@ -158,6 +158,11 @@ def checkout_view (request):
     }
 
     # todo: 用户信息、地址自动填充
+    u = User.objects.get(id=request.user.id)
+    form_default_data = {
+        "billing_first_name": u.first_name,
+        "billing_last_name": u.last_name,
+    }
 
     order_id = request.GET.get("id", None)
     if order_id:
@@ -167,7 +172,7 @@ def checkout_view (request):
     param["order"] = order
 
     if request.method == "POST":
-        form = CheckoutForm(request.POST)
+        form = CheckoutForm(request.POST, initial=form_default_data)
         if form.is_valid():
             data = {
                 "first_name": form.cleaned_data.get("billing_first_name"),
@@ -228,9 +233,9 @@ def checkout_view (request):
                 form.add_error(None, "信息拉取失败，请稍后重试")
 
         else:
-            form = CheckoutForm(request.POST)
+            form = CheckoutForm(request.POST, initial=form_default_data)
     else:
-        form = CheckoutForm()
+        form = CheckoutForm(initial=form_default_data)
 
     param["form"] = form
     return render(request, 'client/checkout.html', param)
