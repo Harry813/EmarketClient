@@ -489,7 +489,7 @@ class CheckoutForm(forms.Form):
 
     def __init__ (self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        response = send_request("/payment/", "GET", params={"mode": "choice"})
+        response = send_request("/payment/", "GET", {"mode": "choice"})
         if response.status_code == 200:
             self.fields["payment_method"].choices = [
                 (payment_method["key"], payment_method["val"]) for payment_method in response.json()

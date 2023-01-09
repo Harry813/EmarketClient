@@ -18,7 +18,7 @@ class RemoteModel(models.Model):
         return diff > datetime.timedelta(hours=1)
 
     def update (self, base_url=None):
-        response = send_request(f"/{base_url}/", "GET", params={"mode": "retrieve", "id": str(self.id)})
+        response = send_request(f"/{base_url}/", "GET", {"mode": "retrieve", "id": str(self.id)})
         if response.status_code == 200:
             if response.json() != self.raw_data:
                 self.raw_data = response.json()

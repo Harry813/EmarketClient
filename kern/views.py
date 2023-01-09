@@ -110,7 +110,7 @@ def checkout_api (request):
 
         coupon = data.get("coupon", "")
         if coupon != "":
-            response = send_request("/coupon/validate/", "GET", params={"code": coupon})
+            response = send_request("/coupon/validate/", "GET", {"code": coupon})
             if response.status_code != 200:
                 return Response({"msg": _("优惠券无效")}, status=HTTP_400_BAD_REQUEST)
 
@@ -120,7 +120,7 @@ def checkout_api (request):
             "coupon": coupon,
         }
 
-        response = send_request('/checkout/', "POST", data=new_data, is_json=True)
+        response = send_request('/checkout/', "POST", new_data, is_json=True)
         if response.status_code == 200:
             order_id = response.json().get("id", None)
             Order.objects.get_or_create(id=order_id, user=user, is_active=True)

@@ -6,13 +6,9 @@ import requests as rq
 from EmarketClient import settings
 
 
-def send_request (url, method, headers=None, is_json=False, **kwargs):
+def send_request (url, method, payload=None, headers=None, is_json=False):
     """
     Send request to url
-    :param is_json:
-    :param url: url path to send request (e.g. /path/to/api)
-    :param method: request method ["GET", "POST", "PUT", "DELETE"], case insensitive
-    :param headers: headers to send
     """
     method = method.upper()
     if headers is None:
@@ -25,22 +21,18 @@ def send_request (url, method, headers=None, is_json=False, **kwargs):
     url = f"{settings.API_ROOT}{url}"
 
     if method == "GET":
-        params = kwargs.get("params", None)
-        return rq.get(url, headers=headers, params=params)
+        return rq.get(url, headers=headers, params=payload)
     elif method == "POST":
-        data = kwargs.get("data")
         if is_json:
             headers["Content-Type"] = "application/json"
-            data = json.dumps(data)
-        return rq.post(url, data=data, headers=headers)
+            payload = json.dumps(payload)
+        return rq.post(url, data=payload, headers=headers)
     elif method == "PUT":
-        data = kwargs.get("data")
         if is_json:
             headers["Content-Type"] = "application/json"
-            data = json.dumps(data)
-        return rq.put(url, data=data, headers=headers)
+            payload = json.dumps(payload)
+        return rq.put(url, data=payload, headers=headers)
     elif method == "DELETE":
-        params = kwargs.get("params", None)
-        return rq.delete(url, headers=headers, params=params)
+        return rq.delete(url, headers=headers, params=payload)
     else:
         return None

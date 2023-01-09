@@ -181,7 +181,7 @@ def checkout_view (request):
                 "zip_code": form.cleaned_data.get("billing_zip_code"),
             }
 
-            response = send_request("/address/", "POST", data=data)
+            response = send_request("/address/", "POST", data)
 
             if response.status_code == 201:
                 billing_address_id = response.json().get("id")
@@ -204,7 +204,7 @@ def checkout_view (request):
                     "country": form.cleaned_data.get("shipping_country"),
                     "zip_code": form.cleaned_data.get("shipping_zip_code"),
                 }
-                response = send_request("/address/", "POST", data=data)
+                response = send_request("/address/", "POST", data)
                 if response.status_code == 201:
                     shipping_address_id = response.json().get("id")
                     Address.objects.create(id=shipping_address_id)
@@ -221,7 +221,7 @@ def checkout_view (request):
                 "amount": order.total,
                 "currency": "GBP",
             }
-            response = send_request("/pay/", "POST", data=data)
+            response = send_request("/pay/", "POST", data)
             if response.status_code == 200:
                 return redirect("client:pay", order_id=order.id)
             else:
@@ -246,7 +246,7 @@ def pay_view (request, order_id):
 
     order = get_object_or_404(Order, id=order_id, user=request.user)
     # todo: 检查订单状态，并执行相应跳转
-    response = send_request("/pay/", "GET", params={"id": order.id, "mode": "pay"})
+    response = send_request("/pay/", "GET", {"id": order.id, "mode": "pay"})
     if response.status_code == 200:
         param.update(response.json())
     else:

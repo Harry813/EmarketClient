@@ -3,7 +3,7 @@ from kern.utils.core import send_request
 
 
 def download_image (img_id):
-    response = send_request("/image/", "GET", params={"mode": "retrieve", "id": img_id})
+    response = send_request("/image/", "GET", {"mode": "retrieve", "id": img_id})
     if response.status_code == 200:
         suffix = response.headers["Content-Type"].split("/")[-1]
         img, _ = Image.objects.update_or_create(
