@@ -264,7 +264,12 @@ def pay_finish (request, order_id):
     u = User.objects.get(id=request.user.id)
     CartItem.objects.filter(user=u).delete()
 
-    # todo: 向服务器发出支付完成请求
+    response = send_request("/pay/", "GET", {"id": order_id, "mode": "finish"})
+    if response.status_code == 200:
+        return redirect("client:order", order_id=order_id)
+    else:
+        return HttpResponseBadRequest(response)
+
 
 @login_required(login_url="client:login")
 def profile_view (request):
