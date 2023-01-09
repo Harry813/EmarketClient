@@ -55,8 +55,7 @@ def login_user (request, username, password):
         response = send_request("/auth/login/", "POST", {"id": str(user.uuid)})
         if response.status_code == 200:
             login(request, user)
-            return user
         else:
-            return None
+            raise ValueError(response.json()["detail"])
     else:
-        return None
+        raise ValueError("User not found")
