@@ -48,14 +48,14 @@ def login_view (request):
             username = form.cleaned_data.get("username")
             paswd = form.cleaned_data.get("password")
 
-            user = login_user(request=request, username=username, password=paswd)
-            if user:
+            try:
+                login_user(request=request, username=username, password=paswd)
                 if next_url:
                     return HttpResponseRedirect(next_url)
                 else:
                     return redirect("client:index")
-            else:
-                form.add_error(None, ValidationError(_("用户不存在"), code="UserNotExist"))
+            except ValueError as e:
+                form.add_error(None, ValidationError(e, code="LoginFailed"))
         else:
             form = LoginForm(request.POST)
     else:
