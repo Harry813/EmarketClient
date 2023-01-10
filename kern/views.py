@@ -41,9 +41,9 @@ def cart_api (request):
     elif request.method == "POST":
         user = User.objects.get(pk=request.user.pk)
         variant_id = request.data.get("id", None)
-        quantity = request.data.get("quantity")
-        obj, status = CartItem.objects.get_or_create(user=user, variant_id=variant_id)
-        if not status:
+        quantity = request.data.get("quantity", 1)
+        obj, is_created = CartItem.objects.get_or_create(user=user, variant_id=variant_id)
+        if not is_created:
             obj.quantity += quantity
             obj.save()
             return Response({"msg": _("商品添加成功，购物车中有 %(count)s 件") % {'count': obj.quantity}},
