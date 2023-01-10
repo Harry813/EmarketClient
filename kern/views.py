@@ -115,7 +115,7 @@ def checkout_api (request):
                 return Response({"msg": _("优惠券无效")}, status=HTTP_400_BAD_REQUEST)
 
         new_data = {
-            "user": str(User.objects.get(pk=request.user.pk).uuid),
+            "user": str(User.objects.get(pk=request.user.pk).id),
             "items": items,
             "coupon": coupon,
         }

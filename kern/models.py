@@ -43,7 +43,7 @@ class RemoteModel(models.Model):
 
 
 class User(AbstractUser):
-    uuid = models.UUIDField(blank=True, null=True)
+    id = models.UUIDField(editable=False, primary_key=True)
     email = models.EmailField(verbose_name='邮箱', max_length=100, unique=True)
     username = models.CharField(verbose_name='用户名', max_length=30)
     first_name = models.CharField(verbose_name='名', max_length=30)
@@ -65,6 +65,10 @@ class User(AbstractUser):
     @property
     def wishlist (self):
         return WishlistItem.objects.filter(user=self)
+
+    @property
+    def short_id (self):
+        return str(self.id)[:6]
 
     class Meta:
         verbose_name = "客户"
