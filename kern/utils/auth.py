@@ -42,7 +42,7 @@ def create_user (**kwargs):
                             {"username": username, "email": email,
                              "first_name": first_name, "last_name": last_name})
     if response.status_code == 201:
-        user.uuid = response.json()["id"]
+        user.id = response.json()["id"]
         user.save()
         return user
     else:
