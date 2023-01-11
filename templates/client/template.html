@@ -212,11 +212,6 @@
                                             <div class="cart_button view_cart">
                                                 <a href="{% url 'client:cart' %}">{% trans "查看购物车" %}</a>
                                             </div>
-                                            {% if cart_count > 0 %}
-                                                <div class="cart_button checkout">
-                                                    <a class="active" href="checkout.html">Checkout</a>
-                                                </div>
-                                            {% endif %}
                                         {% else %}
                                             <div class="cart_button view_cart">
                                                 <a href="{% url 'client:login' %}">{% trans "登录" %}</a>
