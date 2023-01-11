@@ -62,7 +62,8 @@
                                                 <td>{{ order.status }}</td>
                                                 <td>{{ order.quantity }}{% trans "件物品" %},
                                                     {{ currency_symbol }}{{ order.total }}</td>
-                                                <td><a href="cart.html" class="view">view</a></td>
+                                                <td><a href="{% url 'client:order' order.id %}"
+                                                       class="view">{% trans "查看" %}</a></td>
                                             </tr>
                                         {% empty %}
                                             <tr>
