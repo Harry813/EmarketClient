@@ -90,11 +90,10 @@ def cart_api (request):
 @api_view(['POST'])
 def checkout_api (request):
     if request.method == "POST":
-        data = request.data
         user = User.objects.get(pk=request.user.pk)
 
         items = request.data.get("items", None)
-        if items is None:
+        if not items:
             return Response({"msg": _("无效的请求")}, status=HTTP_400_BAD_REQUEST)
         for item in items:
             variant_id = item.get("id", None)
@@ -102,27 +101,28 @@ def checkout_api (request):
             if variant_id is None or quantity is None:
                 return Response({"msg": _("无效的请求")}, status=HTTP_400_BAD_REQUEST)
 
-            obj, status = CartItem.objects.get_or_create(user=user, variant_id=variant_id)
-            if not status:
-                obj.quantity = quantity
+            obj, is_created = CartItem.objects.get_or_create(user=user, variant_id=variant_id)
+            if not is_created:
+                obj.quantity = int(quantity)
                 obj.save()
 
-        coupon = data.get("coupon", "")
+        coupon = request.data.get("coupon", "")
         if coupon != "":
             response = send_request("/coupon/validate/", "GET", {"code": coupon})
             if response.status_code != 200:
                 return Response({"msg": _("优惠券无效")}, status=HTTP_400_BAD_REQUEST)
 
-        new_data = {
+        items = [{"id": str(item.variant_id), "quantity": item.quantity} for item in CartItem.objects.filter(user=user)]
+        payload = {
             "user": str(User.objects.get(pk=request.user.pk).id),
             "items": items,
             "coupon": coupon,
         }
 
-        response = send_request('/checkout/', "POST", new_data, is_json=True)
+        response = send_request('/checkout/', "POST", payload, is_json=True)
         if response.status_code == 200:
             order_id = response.json().get("id", None)
             Order.objects.get_or_create(id=order_id, user=user, is_active=True)
             return Response({"id": order_id}, status=HTTP_200_OK)
         else:
-            return Response(response, status=HTTP_400_BAD_REQUEST)
+            return Response({"msg": response.text}, status=HTTP_400_BAD_REQUEST)

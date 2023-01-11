@@ -83,7 +83,7 @@
                                 <div class="coupon_inner">
                                     <p>{% trans "如果你有优惠码请在这里填写" %}</p>
                                     <input placeholder="{% trans '优惠码' %}" type="text" id="coupon_input">
-                                    <button type="button">{% trans "验证优惠码" %}</button>
+                                    <button class="btn" type="button">{% trans "验证优惠码" %}</button>
                                 </div>
                             </div>
                         </div>
@@ -95,15 +95,6 @@
                                         <div class="cart_subtotal">
                                             <p>{% trans "小计" %}</p>
                                             <p class="cart_amount">{{ currency_symbol }}{{ cart_subtotal }}</p>
-                                        </div>
-                                        <div class="cart_subtotal ">
-                                            <p>{% trans "快递" %}</p>
-                                            <p class="cart_amount"> {{ currency_symbol }}10.00</p>
-                                        </div>
-
-                                        <div class="cart_subtotal">
-                                            <p>{% trans "总计" %}</p>
-                                            <p class="cart_amount">{{ currency_symbol }}{{ total }}</p>
                                         </div>
                                         <div class="checkout_btn">
                                             <a href="#" id="checkout_button">{% trans "前往结算" %}</a>
@@ -136,8 +127,7 @@
                     })
                 }
             });
-            console.log(data);
-            // 发送ajax请求
+            //console.log(data);
             $.ajax({
                 url: '{% url 'kern:cart' %}',
                 method: 'push',
@@ -156,17 +146,15 @@
                 }
             })
         });
-
-        // 当#checkout_button被点击，提交ajax POST申请，data格式应为
-        //{"items": [{"id": "xxxx-xxxx-xxxxxxxx (UUID as string)", "quantity": x(int)}, ...]
-        // "coupon": "xxxxxxx"(string, optional)}
         $('#checkout_button').click(function (e) {
             e.preventDefault();
-            // 弹出loading
-            let loading = notyf.open({
-                type: 'info',
-                message: '正在提交订单，请稍后...'
-            });
+            Swal.fire({
+                title: '{% trans "正在提交订单" %}',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading()
+                },
+            })
             let inputs = $('input[data-variant]');
             let items = [];
             inputs.each(function () {
@@ -191,6 +179,7 @@
                 "items": items,
                 "coupon": coupon
             };
+            console.log(JSON.stringify(p_data));
             $.ajax({
                 url: '{% url 'kern:checkout' %}',
                 method: 'post',
@@ -200,13 +189,20 @@
                     'X-CSRFToken': '{{ csrf_token }}'
                 },
                 success: function (data) {
-                    console.log(data.id)
                     let id = data.id;
+                    Swal.close();
                     window.location.href = '{% url 'client:checkout' %}' + '?id=' + id;
                 },
                 error: function (data) {
-                    console.log(data)
-                    notyf.error(data["msg"]);
+                    Swal.close();
+                    if (data.status === 400) {
+                        console.log(data.responseJSON.msg);
+                        {#notyf.error(data.responseJSON.msg);#}
+                        notyf.error('{% trans "发生错误，请联系管理员或稍后重试" %}')
+                    } else {
+                        notyf.error('{% trans "未知错误，请联系管理员" %}')
+                        console.log(data)
+                    }
                 }
             })
         })
