@@ -305,6 +305,18 @@ class Order(RemoteModel):
         "COMPLETED": _("已完成"),
         "CANCELLED": _("已取消")
     }
+    CARRIER = [
+        ("ROYALMAIL", "Royal Mail"),
+        ("PARCELFORCE", "Parcel Force"),
+        ("YODEL", "Yodel"),
+        ("DPD", "DPD"),
+        ("TNT", "TNT"),
+        ("DHL", "DHL"),
+        ("UPS", "UPS"),
+        ("FEDEX", "FedEx"),
+        ("MYHERMES", "MyHermes"),
+        ("COLLECTPLUS", "Collect+"),
+    ]
     user = models.ForeignKey(verbose_name="客户", on_delete=models.CASCADE, to="User")
     is_active = models.BooleanField(verbose_name="是否激活", default=True)
 
@@ -331,6 +343,22 @@ class Order(RemoteModel):
         return Decimal(self.data.get("shipping", 0)).quantize(Decimal("0.00"))
 
     @property
+    def shipment (self):
+        return self.data.get("shipment", {})
+
+    @property
+    def carrier (self):
+        if self.shipment:
+            return self.shipment.get("carrier")
+        return
+
+    @property
+    def payment (self):
+        if self.status in ["PAID", "PROCESSING", "CONFIRMED", "SHIPPED", "COMPLETED"]:
+            return self.data.get("payment", {})
+        return None
+
+    @property
     def discount (self):
         return Decimal(self.data.get("discount", 0)).quantize(Decimal("0.00"))
 
@@ -345,12 +373,22 @@ class Order(RemoteModel):
 
     @property
     def status (self):
-        s = self.data.get("status")
-        return self.STATUS.get(s, s)
+        return self.data.get("status")
+
+    def get_status_display (self):
+        return self.STATUS.get(self.status, self.status)
 
     @property
     def short_id (self):
         return str(self.id)[-6:]
+
+    @property
+    def billing_address (self):
+        return Address.objects.filter(id=self.data.get("billing_address")).first()
+
+    @property
+    def shipping_address (self):
+        return Address.objects.filter(id=self.data.get("shipping_address")).first()
 
     def save (self, *args, **kwargs):
         # each user can only have one active order
