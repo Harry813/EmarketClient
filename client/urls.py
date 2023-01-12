@@ -6,7 +6,7 @@ app_name = 'client'
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('test/', views.test, name='test'),
+    # path('test/', views.test, name='test'),
 
     path('product/', views.products_view, name='shop'),
     path('product/<str:product_id>/', views.product_detail_view, name='product'),
@@ -18,6 +18,7 @@ urlpatterns = [
     path('pay/finish/<str:order_id>/', views.pay_finish, name='pay_finish'),
 
     path('profile/', views.profile_view, name='profile'),
+    path('order/<str:order_id>/', views.order_view, name='order'),
 
     re_path(r'login/$', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
