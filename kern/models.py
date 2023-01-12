@@ -139,6 +139,10 @@ class Address(RemoteModel):
     def zip_code (self):
         return self.data.get("zip_code", "")
 
+    @property
+    def phone (self):
+        return self.data.get("phone", "")
+
 
 class Product(RemoteModel):
     @property
