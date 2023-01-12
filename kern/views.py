@@ -32,6 +32,7 @@ def wishlist_api (request, format=None):
 
 @csrf_exempt
 @api_view(['GET', 'POST', 'PUSH', 'DELETE'])
+@permission_classes([IsAuthenticated])
 def cart_api (request):
     if request.method == "GET":
         items = CartItem.objects.filter(user=request.user)
@@ -88,6 +89,7 @@ def cart_api (request):
 
 @csrf_exempt
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def checkout_api (request):
     if request.method == "POST":
         user = User.objects.get(pk=request.user.pk)
