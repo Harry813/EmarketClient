@@ -1,0 +1,298 @@
+{% extends 'client/template.html' %}
+{% load i18n %}
+
+{% block content %}
+    <!--breadcrumbs area start-->
+    <div class="breadcrumbs_area">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="breadcrumb_content">
+                        <h3>{% trans "订单" %} #{{ order.short_id }}</h3>
+                        <ul>
+                            <li><a href="{% url 'client:index' %}">{% trans "首页" %}</a></li>
+                            <li>></li>
+                            <li><a href="{% url 'client:profile' %}">{% trans "用户" %}</a></li>
+                            <li>></li>
+                            <li>{% trans "订单详情" %}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--breadcrumbs area end-->
+
+    <!--shopping cart area start -->
+    <div class="shopping_cart_area">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="table_desc">
+                        <div class="cart_page table-responsive">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th class="product_name">{% trans "品名" %}</th>
+                                    <th class="product-price">{% trans "价格" %}</th>
+                                    <th class="product_quantity">{% trans "数量" %}</th>
+                                    <th class="product_total">{% trans "总价" %}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for item in order.items %}
+                                    <tr>
+                                        <td class="product_name"><a
+                                                href="">{{ item.name }}</a>
+                                        </td>
+                                        <td class="product-price">{{ currency_symbol }}{{ item.price }}</td>
+                                        <td class="product_quantity">x{{ item.quantity }}</td>
+                                        <td class="product_total">{{ currency_symbol }}{{ item.subtotal }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--coupon code area start-->
+            <div class="coupon_area">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="well">
+                            <div class="coupon_code right">
+                                <h3>{% trans "购物车小结" %}</h3>
+                                <div class="coupon_inner">
+                                    <div class="cart_subtotal">
+                                        <p>{% trans "小计" %}</p>
+                                        <p class="cart_amount">{{ currency_symbol }}{{ order.subtotal }}</p>
+                                    </div>
+                                    <div class="cart_subtotal">
+                                        <p>{% trans "快递" %}</p>
+                                        <p class="cart_amount"> {{ currency_symbol }}10.00</p>
+                                    </div>
+                                    <div class="cart_subtotal">
+                                        <p>{% trans "总计" %}</p>
+                                        <p class="cart_amount">{{ currency_symbol }}{{ order.total }}</p>
+                                    </div>
+                                    {% if order.payment %}
+                                        <div class="cart_subtotal">
+                                            <p>{% trans "付款方式" %}</p>
+                                            <p class="cart_amount">{{ order.payment.method }}
+                                                <button type="button" class="btn btn-sm"
+                                                        onclick="window.location.href='{% url 'client:pay' order_id=order.pk %}'">
+                                                    <i class="fa-solid fa-right-long"></i>
+                                                </button>
+                                            </p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="{% if order.shipment %} col-md-3 {% else %} col-md-6 {% endif %} mb-4">
+                        <div class="coupon_code right">
+                            <h3>{% trans "账单概览" %}</h3>
+                            <div class="coupon_inner">
+                                <div class="cart_subtotal">
+                                    <p>{% trans "状态" %}</p>
+                                    <p class="cart_amount">{{ order.get_status_display }}</p>
+                                </div>
+                                <div class="cart_subtotal">
+                                    <p>{% trans "创建时间" %}</p>
+                                    <p class="cart_amount">{{ order.date }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if order.shipment %}
+                        <div class="col-md-3 mb-4">
+                            <div class="coupon_code right">
+                                <h3>{% trans "快递" %}</h3>
+                                <div class="coupon_inner">
+                                    <div class="cart_subtotal">
+                                        <p>{% trans "承接公司" %}</p>
+                                        <p class="cart_amount">{{ order.get_carrier_display }}</p>
+                                    </div>
+                                    <div class="cart_subtotal">
+                                        <p>{% trans "追踪单号" %}</p>
+                                        <p class="cart_amount"><a href="{{ order.shipment.tracking_url }}">
+                                            {{ order.shipment.tracking_number }}</a></p>
+                                        </a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="col-md-6 mb-4">
+                        <div class="coupon_code right">
+                            <h3>{% trans "账单地址" %}</h3>
+                            <div class="coupon_inner">
+                                <div class="cart_subtotal">
+                                    <p>{% trans "收件人" %}</p>
+                                    <p class="cart_amount">{{ order.billing_address.full_name }}</p>
+                                </div>
+                                <div class="cart_subtotal">
+                                    <p>{% trans "联系电话" %}</p>
+                                    <p class="cart_amount">{{ order.billing_address.phone }}</p>
+                                </div>
+                                <div class="cart_subtotal">
+                                    <p>{% trans "地址" %}</p>
+                                    <p class="cart_amount">{{ order.billing_address.address_line1 }}</p>
+                                </div>
+                                {% if order.billing_address.address_line2 %}
+                                    <div class="cart_subtotal">
+                                        <p></p>
+                                        <p class="cart_amount">{{ order.billing_address.address_line2 }}</p>
+                                    </div>
+                                {% endif %}
+                                <div class="cart_subtotal">
+                                    <p></p>
+                                    <p class="cart_amount">{{ order.billing_address.city }}, {{ order.billing_address.state }}, {{ order.billing_address.country }}</p>
+                                </div>
+                                <div class="cart_subtotal">
+                                    <p></p>
+                                    <p class="cart_amount">{{ order.billing_address.zip_code }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if order.shipping_address %}
+                        <div class="col-md-6 mb-4">
+                            <div class="coupon_code right">
+                                <h3>{% trans "寄送地址" %}</h3>
+                                <div class="coupon_inner">
+                                    <div class="cart_subtotal">
+                                        <p>{% trans "收件人" %}</p>
+                                        <p class="cart_amount">{{ order.shipping_address.full_name }}</p>
+                                    </div>
+                                    <div class="cart_subtotal">
+                                        <p>{% trans "地址" %}</p>
+                                        <p class="cart_amount">{{ order.shipping_address.address_line1 }}</p>
+                                    </div>
+                                    {% if order.shipping_address.address_line2 %}
+                                        <div class="cart_subtotal">
+                                            <p></p>
+                                            <p class="cart_amount">{{ order.shipping_address.address_line2 }}</p>
+                                        </div>
+                                    {% endif %}
+                                    <div class="cart_subtotal">
+                                        <p></p>
+                                        <p class="cart_amount">{{ order.shipping_address.city }}</p>
+                                    </div>
+                                    <div class="cart_subtotal">
+                                        <p></p>
+                                        <p class="cart_amount">{{ order.shipping_address.state }}</p>
+                                    </div>
+                                    <div class="cart_subtotal">
+                                        <p></p>
+                                        <p class="cart_amount">{{ order.shipping_address.country }}</p>
+                                    </div>
+                                    <div class="cart_subtotal">
+                                        <p></p>
+                                        <p class="cart_amount">{{ order.shipping_address.postcode }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <!--coupon code area end-->
+                </div>
+            </div>
+            <!--shopping cart area end -->
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $('#update_cart').click(function () {
+            let inputs = $('input[data-variant]');
+            let data = [];
+            inputs.each(function () {
+                let variant = $(this).data('variant');
+                let quantity = $(this).val();
+                if (variant && quantity) {
+                    data.push({
+                        id: variant,
+                        quantity: quantity
+                    })
+                }
+            });
+            console.log(data);
+            // 发送ajax请求
+            $.ajax({
+                url: '{% url 'kern:cart' %}',
+                method: 'push',
+                data: {
+                    "items": JSON.stringify(data),
+                    "mode": "full_update"
+                },
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    notyf.success(data.msg);
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 2000)
+                }
+            })
+        });
+
+        // 当#checkout_button被点击，提交ajax POST申请，data格式应为
+        //{"items": [{"id": "xxxx-xxxx-xxxxxxxx (UUID as string)", "quantity": x(int)}, ...]
+        // "coupon": "xxxxxxx"(string, optional)}
+        $('#checkout_button').click(function (e) {
+            e.preventDefault();
+            // 弹出loading
+            let loading = notyf.open({
+                type: 'info',
+                message: '正在提交订单，请稍后...'
+            });
+            let inputs = $('input[data-variant]');
+            let items = [];
+            inputs.each(function () {
+                let variant = $(this).data('variant');
+                let quantity = $(this).val();
+                if (variant && quantity) {
+                    items.push({
+                        id: variant,
+                        quantity: quantity
+                    })
+                }
+            });
+
+            if (items.length === 0) {
+                notyf.error("{% trans '购物车为空，无法提交订单' %}");
+                $(this).attr('disabled', false);
+                return;
+            }
+
+            let coupon = $('#coupon_input').val();
+            let p_data = {
+                "items": items,
+                "coupon": coupon
+            };
+            $.ajax({
+                url: '{% url 'kern:checkout' %}',
+                method: 'post',
+                data: JSON.stringify(p_data),
+                contentType: 'application/json',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    console.log(data.id)
+                    let id = data.id;
+                    window.location.href = '{% url 'client:checkout' %}' + '?id=' + id;
+                },
+                error: function (data) {
+                    console.log(data)
+                    notyf.error(data["msg"]);
+                }
+            })
+        })
+    </script>
+{% endblock %}
