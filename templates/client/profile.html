@@ -59,7 +59,7 @@
                                             <tr>
                                                 <td>#{{ order.short_id|upper }}</td>
                                                 <td>{{ order.date }}</td>
-                                                <td>{{ order.status }}</td>
+                                                <td>{{ order.get_status_display }}</td>
                                                 <td>{{ order.quantity }}{% trans "件物品" %},
                                                     {{ currency_symbol }}{{ order.total }}</td>
                                                 <td><a href="{% url 'client:order' order.id %}"
