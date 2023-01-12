@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
+import EmarketClient.settings
 from client.forms import *
 from kern.models import *
 from kern.utils.auth import login_user, create_user
@@ -14,19 +15,21 @@ from kern.utils.utils import *
 
 
 def index (request):
-    params = {
-        "active_page": "index",
-        **get_client_params(request=request, page_title=_("首页")),
-    }
-    return render(request, 'client/index.html', params)
+    return redirect("client:shop")
+    # params = {
+    #     "active_page": "index",
+    #     **get_client_params(request=request, page_title=_("首页")),
+    # }
+    # return render(request, 'client/index.html', params)
 
 
-def test (request):
-    r = send_request("/auth/site/validate/", "POST", {"ip": os.getenv("IPv4")})
-    if r.status_code == 200:
-        return HttpResponse("Success")
-    else:
-        return HttpResponse(r)
+# def test (request):
+#     if not EmarketClient.settings.DEBUG:
+#         return HttpResponse(status=403)
+#     response = send_request("/auth/register/", "POST",
+#                             {"username": "TestUser", "email": "test@test.com",
+#                              "first_name": "Test", "last_name": "User"})
+#     return HttpResponse(response)
 
 
 def login_view (request):
@@ -144,9 +147,6 @@ def cart_view (request):
         "active_page": "user",
         **get_client_params(request=request, page_title=_("购物车")),
     }
-    param.update({
-        "total": param["cart_subtotal"] + 10,
-    }),
     return render(request, 'client/cart.html', param)
 
 
@@ -168,7 +168,9 @@ def checkout_view (request):
     if order_id:
         order = Order.objects.get(id=order_id)
     else:
-        order = Order.objects.get(user=request.user)
+        order = Order.objects.get(user=request.user, is_active=True)
+    order.update()
+
     param["order"] = order
 
     if request.method == "POST":
@@ -184,20 +186,22 @@ def checkout_view (request):
                 "state": form.cleaned_data.get("billing_state"),
                 "country": form.cleaned_data.get("billing_country"),
                 "zip_code": form.cleaned_data.get("billing_zip_code"),
+                "customer": str(request.user.id),
             }
 
             response = send_request("/address/", "POST", data)
 
-            if response.status_code == 201:
+            if response.status_code in [200, 201]:
                 billing_address_id = response.json().get("id")
-                Address.objects.create(id=billing_address_id)
-            elif response.status_code == 200:
-                billing_address_id = response.json().get("id")
+                billing_address, is_created = Address.objects.get_or_create(id=billing_address_id)
+                billing_address.update()
             else:
-                return HttpResponseBadRequest()
+                form.add_error(None, ValidationError(response.text, code="CheckoutFailed"))
+                param["form"] = form
+                return render(request, 'client/checkout.html', param)
 
             shipping_address_id = None
-            if form.cleaned_data.get("ship_to_different_address"):
+            if form.cleaned_data["ship_to_different_address"]:
                 data = {
                     "first_name": form.cleaned_data.get("shipping_first_name"),
                     "last_name": form.cleaned_data.get("shipping_last_name"),
@@ -208,15 +212,17 @@ def checkout_view (request):
                     "state": form.cleaned_data.get("shipping_state"),
                     "country": form.cleaned_data.get("shipping_country"),
                     "zip_code": form.cleaned_data.get("shipping_zip_code"),
+                    "customer": str(request.user.id),
                 }
                 response = send_request("/address/", "POST", data)
-                if response.status_code == 201:
+                if response.status_code in [200, 201]:
                     shipping_address_id = response.json().get("id")
-                    Address.objects.create(id=shipping_address_id)
-                elif response.status_code == 200:
-                    shipping_address_id = response.json().get("id")
+                    shipping_address, is_created = Address.objects.get_or_create(id=shipping_address_id)
+                    shipping_address.update()
                 else:
-                    form.add_error(None, ValidationError(_("地址验证失败，请重试"), code="CheckoutFailed"))
+                    form.add_error(None, ValidationError(_("寄送地址验证失败，请重试"), code="CheckoutFailed"))
+                    param["form"] = form
+                    return render(request, 'client/checkout.html', param)
 
             data = {
                 "order": order.id,
@@ -231,7 +237,6 @@ def checkout_view (request):
                 return redirect("client:pay", order_id=order.id)
             else:
                 form.add_error(None, "信息拉取失败，请稍后重试")
-
         else:
             form = CheckoutForm(request.POST, initial=form_default_data)
     else:
@@ -251,6 +256,7 @@ def pay_view (request, order_id):
 
     order = get_object_or_404(Order, id=order_id, user=request.user)
     # todo: 检查订单状态，并执行相应跳转
+    order.update()
     response = send_request("/pay/", "GET", {"id": order.id, "mode": "pay"})
     if response.status_code == 200:
         param.update(response.json())
@@ -262,10 +268,11 @@ def pay_view (request, order_id):
 @login_required(login_url="client:login")
 def pay_finish (request, order_id):
     u = User.objects.get(id=request.user.id)
-    CartItem.objects.filter(user=u).delete()
 
     response = send_request("/pay/", "GET", {"id": order_id, "mode": "finish"})
     if response.status_code == 200:
+        Order.objects.get(id=order_id).update()
+        CartItem.objects.filter(user=u).delete()
         return redirect("client:order", order_id=order_id)
     else:
         return HttpResponseBadRequest(response)
@@ -283,3 +290,19 @@ def profile_view (request):
     param["orders"] = orders
 
     return render(request, 'client/profile.html', param)
+
+
+@login_required(login_url="client:login")
+def order_view (request, order_id):
+    param = {
+        "active_page": "user",
+        **get_client_params(request=request, page_title=_("订单详情")),
+    }
+
+    u = User.objects.get(id=request.user.id)
+    order = get_object_or_404(Order, id=order_id, user=u)
+    order.update()
+    if order.status == "CREATED":
+        return HttpResponseRedirect(reverse("client:checkout") + "?id=" + str(order.id))
+    param["order"] = order
+    return render(request, 'client/order.html', param)
