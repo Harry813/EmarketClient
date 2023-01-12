@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -96,6 +97,13 @@
             },
             success: function (data) {
                 notyf.success(data["msg"]);
+            },
+            error: function (data) {
+                if (data.responseJSON["detail"] === "Authentication credentials were not provided.") {
+                    notyf.error('{% trans "用户尚未登录，无法使用该功能" %}');
+                } else {
+                    notyf.error(data["msg"]);
+                }
             }
         });
     });
@@ -119,6 +127,13 @@
                 setTimeout(function () {
                     window.location.reload();
                 }, 1500);
+            },
+            error: function (data) {
+                if (data.responseJSON["detail"] === "Authentication credentials were not provided.") {
+                    notyf.error('{% trans "用户尚未登录，无法使用该功能" %}');
+                } else {
+                    notyf.error(data["msg"]);
+                }
             }
         });
     });
@@ -138,6 +153,14 @@
             },
             success: function (data) {
                 notyf.success(data["msg"]);
+            },
+            error: function (data) {
+                console.log(data)
+                if (data.responseJSON["detail"] === "Authentication credentials were not provided.") {
+                    notyf.error('{% trans "用户尚未登录，无法使用该功能" %}');
+                } else {
+                    notyf.error(data["msg"]);
+                }
             }
         });
     });
@@ -158,6 +181,14 @@
                 setTimeout(function () {
                     window.location.reload();
                 }, 1500);
+            },
+            error: function (data) {
+                console.log(data)
+                if (data.responseJSON["detail"] === "Authentication credentials were not provided.") {
+                    notyf.error('{% trans "用户尚未登录，无法使用该功能" %}');
+                } else {
+                    notyf.error(data["msg"]);
+                }
             }
         });
     });
@@ -178,6 +209,13 @@
             },
             success: function (data) {
                 notyf.success(data["msg"]);
+            },
+            error: function (data) {
+                if (data.responseJSON["detail"] === "Authentication credentials were not provided.") {
+                    notyf.error('{% trans "用户尚未登录，无法使用该功能" %}');
+                } else {
+                    notyf.error(data["msg"]);
+                }
             }
         });
     });
