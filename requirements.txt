@@ -5,3 +5,4 @@ python-dotenv~=0.21.0
 django-widget-tweaks~=1.4.12
 python-dotenv~=0.21.0
 mysqlclient~=2.1.1
+Pillow~=9.3.0
