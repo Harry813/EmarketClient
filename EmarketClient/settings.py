@@ -145,3 +145,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Other settings
 API_ROOT = 'https://emarket.hanxiaofei.me/api/v1'
+API_KEY_CUSTOM_HEADER = "HTTP_X_API_KEY"
