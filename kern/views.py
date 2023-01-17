@@ -6,8 +6,10 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.status import *
 from rest_framework.response import Response
+from rest_framework_api_key.permissions import HasAPIKey
 
 from kern.models import *
+from kern.utils.sync import sync
 
 
 @csrf_exempt
@@ -128,3 +130,12 @@ def checkout_api (request):
             return Response({"id": order_id}, status=HTTP_200_OK)
         else:
             return Response({"msg": response.text}, status=HTTP_400_BAD_REQUEST)
+
+
+@csrf_exempt
+@api_view(['GET'])
+@permission_classes([HasAPIKey])
+def sync_api (request):
+    if request.method == "GET":
+        sync()
+        return Response({"msg": "SUCCESS"}, status=HTTP_200_OK)
