@@ -17,7 +17,8 @@ def sync_images ():
                 if img["updated_at"] != Image.objects.get(id=img["id"]).updated_at:
                     download_image(img["id"])
                     update_count += 1
-        print(f"Downloaded {download_count} images, updated {update_count} images.")
+        print(f"Downloaded {download_count} images\n"
+              f"Updated {update_count} images.")
     else:
         raise Exception(f"ERR: {response.status_code}: {response.text}")
 
@@ -40,11 +41,13 @@ def sync_products ():
                 }
             )
             if not status:
-                obj.update()
                 update_count += 1
             else:
                 create_count += 1
-        print(f"Deleted {delete_count} products, created {create_count} products, updated {update_count} products.")
+            obj.update()
+        print(f"Deleted {delete_count} products\n"
+              f"Created {create_count} products\n"
+              f"Updated {update_count} products.")
     else:
         raise Exception(f"ERR: {response.status_code}: {response.text}")
 
@@ -52,6 +55,9 @@ def sync_products ():
 def sync_variants ():
     response = send_request("/variant/", "GET", {"mode": "sync"})
     if response.status_code == 200:
+        delete_count = 0
+        create_count = 0
+        update_count = 0
         for variant in ProductVariant.objects.all():
             if variant.id not in response.json():
                 variant.delete()
@@ -64,7 +70,14 @@ def sync_variants ():
             )
 
             if not status:
-                obj.update()
+                update_count += 1
+            else:
+                create_count += 1
+            obj.update()
+        print(f"Deleted {delete_count} product variants\n"
+              f"Created {create_count} product variants\n"
+              f"Updated {update_count} product variants.")
+
     else:
         raise Exception(f"ERR: {response.status_code}: {response.text}")
 
