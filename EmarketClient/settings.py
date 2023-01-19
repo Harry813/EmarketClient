@@ -95,7 +95,7 @@ DATABASES = {
         'NAME': 'EmarketClient',
         'USER': 'EmarketClient',
         'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv("DB_HOST"),
+        'HOST': os.getenv("DB_HOST", '127.0.0.1'),
         'PORT': '3306',
     }
 }
@@ -145,4 +145,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Other settings
 API_ROOT = 'https://emarket.hanxiaofei.me/api/v1'
-API_KEY_CUSTOM_HEADER = "HTTP_X_API_KEY"
