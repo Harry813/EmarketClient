@@ -1,24 +1,34 @@
+import datetime
+
 from kern.models import Image, Product, ProductVariant
 from kern.utils.content import download_image
 from kern.utils.core import send_request
 
 
+def str_to_datetime (s):
+    return datetime.datetime.strptime(s, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=datetime.timezone.utc)
+
+
 def sync_images ():
+    print("Syncing Images...")
     response = send_request("/image/", "GET", {"mode": "sync"})
     if response.status_code == 200:
         download_count = 0
         update_count = 0
-        image_all = Image.objects.all().values_list("id", flat=True)
+        unmodified_count = 0
+        image_all = [str(i) for i in Image.objects.all().values_list("id", flat=True)]
         for img in response.json():
             if img["id"] not in image_all:
                 download_image(img["id"])
                 download_count += 1
+            elif str_to_datetime(img["updated_at"]) != Image.objects.get(id=img["id"]).updated_at:
+                download_image(img["id"])
+                update_count += 1
             else:
-                if img["updated_at"] != Image.objects.get(id=img["id"]).updated_at:
-                    download_image(img["id"])
-                    update_count += 1
+                unmodified_count += 1
         print(f"Downloaded {download_count} images\n"
-              f"Updated {update_count} images.")
+              f"Updated {update_count} images\n"
+              f"Unmodified {unmodified_count} images\n")
     else:
         raise Exception(f"ERR: {response.status_code}: {response.text}")
 
@@ -26,58 +36,54 @@ def sync_images ():
 def sync_products ():
     response = send_request("/product/", "GET", {"mode": "sync"})
     if response.status_code == 200:
-        delete_count = 0
-        create_count = 0
-        update_count = 0
-        for product in Product.objects.all():
-            if product.id not in response.json():
-                product.delete()
-                delete_count += 1
-        for data in response.json():
-            obj, status = Product.objects.update_or_create(
-                id=data["id"],
-                defaults={
-                    "id": data["id"],
-                }
-            )
-            if not status:
-                update_count += 1
+        product_delete_count = 0
+        product_create_count = 0
+        product_update_count = 0
+
+        product_all = [str(i) for i in Product.objects.all().values_list("id", flat=True)]
+        # response.json() should be like:
+        # [{'id': '590bb44e-c015-4dcd-8ecc-a176748a8e74', 'variants': ['610ad308-5505-4bd7-a73a-f37a09958309', ...]},
+        #  ...]
+        for p_id in product_all:
+            if p_id not in [i["id"] for i in response.json()]:
+                Product.objects.get(id=p_id).delete()
+                product_delete_count += 1
+
+        for product in response.json():
+            product, created = Product.objects.get_or_create(id=product["id"])
+            if created:
+                product_create_count += 1
             else:
-                create_count += 1
-            obj.update()
-        print(f"Deleted {delete_count} products\n"
-              f"Created {create_count} products\n"
-              f"Updated {update_count} products.")
-    else:
-        raise Exception(f"ERR: {response.status_code}: {response.text}")
+                product_update_count += 1
+            product.update()
 
+        print(f"Deleted {product_delete_count} products\n"
+              f"Created {product_create_count} products\n"
+              f"Updated {product_update_count} products\n\n")
 
-def sync_variants ():
-    response = send_request("/variant/", "GET", {"mode": "sync"})
-    if response.status_code == 200:
-        delete_count = 0
-        create_count = 0
-        update_count = 0
-        for variant in ProductVariant.objects.all():
-            if variant.id not in response.json():
-                variant.delete()
-        for variant in response.json():
-            obj, status = ProductVariant.objects.update_or_create(
-                id=variant,
-                defaults={
-                    "id": variant,
-                }
-            )
+        variants = ProductVariant.objects.all()
+        variants_id = [str(i) for i in variants.values_list("id", flat=True)]
+        resp_variants = [i for j in response.json() for i in j["variants"]]
+        variant_delete_count = 0
+        variant_create_count = 0
+        variant_update_count = 0
 
-            if not status:
-                update_count += 1
+        for v in variants_id:
+            if v not in resp_variants:
+                ProductVariant.objects.get(id=v).delete()
+                variant_delete_count += 1
+
+        for variant in resp_variants:
+            variant, created = ProductVariant.objects.get_or_create(id=variant)
+            if created:
+                variant_create_count += 1
             else:
-                create_count += 1
-            obj.update()
-        print(f"Deleted {delete_count} product variants\n"
-              f"Created {create_count} product variants\n"
-              f"Updated {update_count} product variants.")
+                variant_update_count += 1
+            variant.update()
 
+        print(f"Deleted {variant_delete_count} variants\n"
+              f"Created {variant_create_count} variants\n"
+              f"Updated {variant_update_count} variants\n")
     else:
         raise Exception(f"ERR: {response.status_code}: {response.text}")
 
@@ -85,4 +91,3 @@ def sync_variants ():
 def sync ():
     sync_images()
     sync_products()
-    sync_variants()
