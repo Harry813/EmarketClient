@@ -28,7 +28,7 @@ def sync_images ():
                 unmodified_count += 1
         print(f"Downloaded {download_count} images\n"
               f"Updated {update_count} images\n"
-              f"Unmodified {unmodified_count} images\n")
+              f"Unmodified {unmodified_count} images")
     else:
         raise Exception(f"ERR: {response.status_code}: {response.text}")
 
@@ -57,7 +57,7 @@ def sync_products ():
 
         print(f"Deleted {product_delete_count} products\n"
               f"Created {product_create_count} products\n"
-              f"Updated {product_update_count} products\n\n")
+              f"Updated {product_update_count} products\n")
 
         print("Syncing Product Variants...")
         variants = ProductVariant.objects.all()
@@ -82,7 +82,7 @@ def sync_products ():
 
         print(f"Deleted {variant_delete_count} variants\n"
               f"Created {variant_create_count} variants\n"
-              f"Updated {variant_update_count} variants\n")
+              f"Updated {variant_update_count} variants")
     else:
         raise Exception(f"ERR: {response.status_code}: {response.text}")
 
