@@ -391,7 +391,6 @@ class Order(RemoteModel):
         return Address.objects.filter(id=self.data.get("shipping_address")).first()
 
     def save (self, *args, **kwargs):
-        # each user can only have one active order
         if self.is_active:
             Order.objects.filter(user=self.user, is_active=True).update(is_active=False)
         super().save(*args, **kwargs)
