@@ -27,8 +27,8 @@ SECRET_KEY = 'django-insecure-k*c-&g8*3^_w)62am$ac&a=45m2$ii4di_8&89dc7j8k^%%_mc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['customer.hanxiaofei.me']
-CSRF_TRUSTED_ORIGINS = ['https://customer.hanxiaofei.me']
+ALLOWED_HOSTS = [os.getenv("URL")]
+CSRF_TRUSTED_ORIGINS = [f"{os.getenv('SSL') and 'https' or 'http'}://{os.getenv('URL')}"]
 AUTH_USER_MODEL = "kern.User"
 
 # Application definition
