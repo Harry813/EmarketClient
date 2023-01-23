@@ -18,7 +18,7 @@ class Command(BaseCommand):
         parser.add_argument('-I', '--ip', type=str, help='网站IPv4地址')
         parser.add_argument('-D', '--dbip', type=str, help='数据库IPv4地址，默认为127.0.0.1')
         parser.add_argument('-T', '--dbport', type=str, help='数据库端口，默认为3306')
-        parser.add_argument('-U', '--dbusername', type=str, help='数据库用户名称，默认为EmarketClient')
+        parser.add_argument('--dbusername', type=str, help='数据库用户名称，默认为EmarketClient')
         parser.add_argument('-P', '--pswd', type=str, help='数据库密码')
 
     def handle (self, *args, **options):
@@ -66,10 +66,14 @@ class Command(BaseCommand):
                 raise CommandError('数据库IPv4地址格式错误')
 
         try:
-            dbport = int(options.get('dbport', '3306'))
-        except ValueError:
+            dbport = options.get('dbport')
+            if dbport:
+                dbport = int(dbport)
+            else:
+                dbport = 3306
+        except ValueError or TypeError:
             raise CommandError('数据库端口格式错误')
-        dbname = options.get('dbname', 'emarket')
+        dbname = options.get('dbname', 'EmarketClient')
 
         pswd = options['pswd']
         if not pswd:
