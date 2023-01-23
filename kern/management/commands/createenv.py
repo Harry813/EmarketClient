@@ -5,7 +5,6 @@ from django.core.management.base import BaseCommand, CommandError
 
 class Command(BaseCommand):
     help = '创建必要环境变量，可以通过交互式命令行创建，也可以通过参数创建'
-    requires_system_checks = False
 
     def add_arguments (self, parser):
         parser.add_argument(
