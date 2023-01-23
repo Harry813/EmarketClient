@@ -36,14 +36,12 @@ def sync_images ():
 def sync_products ():
     response = send_request("/product/", "GET", {"mode": "sync"})
     if response.status_code == 200:
+        print("Syncing Products...")
         product_delete_count = 0
         product_create_count = 0
         product_update_count = 0
 
         product_all = [str(i) for i in Product.objects.all().values_list("id", flat=True)]
-        # response.json() should be like:
-        # [{'id': '590bb44e-c015-4dcd-8ecc-a176748a8e74', 'variants': ['610ad308-5505-4bd7-a73a-f37a09958309', ...]},
-        #  ...]
         for p_id in product_all:
             if p_id not in [i["id"] for i in response.json()]:
                 Product.objects.get(id=p_id).delete()
@@ -61,6 +59,7 @@ def sync_products ():
               f"Created {product_create_count} products\n"
               f"Updated {product_update_count} products\n\n")
 
+        print("Syncing Product Variants...")
         variants = ProductVariant.objects.all()
         variants_id = [str(i) for i in variants.values_list("id", flat=True)]
         resp_variants = [i for j in response.json() for i in j["variants"]]
