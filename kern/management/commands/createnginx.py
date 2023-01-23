@@ -35,12 +35,12 @@ class Command(BaseCommand):
         dotenv.load_dotenv(env_path)
         url = os.getenv('URL')
         self.stdout.write(self.style.WARNING('当前URL为：' + url))
-        i1 = input('是否继续？(y/n/new url)：')
-        if i1 == 'n':
+        i1 = input('是否继续？(y/n/new url)，默认为y：')
+        if i1 == 'y' or i1 == '':
+            pass
+        elif i1 == 'n':
             self.stdout.write(self.style.ERROR('已取消'))
             return
-        elif i1 == 'y':
-            pass
         else:
             url = i1
             self.stdout.write(self.style.WARNING('当前URL为：' + url))
@@ -49,12 +49,12 @@ class Command(BaseCommand):
 
         path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
         self.stdout.write(self.style.WARNING('当前路径为：' + path))
-        i2 = input('是否继续？(y/n/new path)：')
-        if i2 == 'n':
+        i2 = input('是否继续？(y/n/new path)，默认为y：')
+        if i2 == 'y' or i2 == '':
+            pass
+        elif i2 == 'n':
             self.stdout.write(self.style.ERROR('已取消'))
             return
-        elif i2 == 'y':
-            pass
         else:
             path = i2
             self.stdout.write(self.style.WARNING('当前路径为：' + path))
