@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand, CommandError
 class Command(BaseCommand):
     help = '创建必要环境变量，可以通过交互式命令行创建，也可以通过参数创建'
     requires_migrations_checks = False
-    requires_system_checks = False
+    requires_system_checks = []
 
     def check_migrations (self, *args, **kwargs):
         pass
@@ -48,7 +48,7 @@ class Command(BaseCommand):
 
         url = options['url']
         if not url:
-            url = input('请输入网站地址，不包含http(s)://：')
+            url = input('请输入网站地址，http(s)://')
 
         ip = options['ip']
         if not ip:
