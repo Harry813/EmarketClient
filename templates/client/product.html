@@ -55,7 +55,9 @@
                         <form action="#">
                             <h1>{{ product.name }}</h1>
                             <div class="product_price">
-                                <span class="old_price">{{ currency_symbol }}{{ product.variant.original_price }}</span>
+                                {% if product.variant.original_price %}
+                                    <span class="old_price">{{ currency_symbol }}{{ product.variant.original_price }}</span>
+                                {% endif %}
                                 <span class="current_price">{{ currency_symbol }}{{ product.variant.price }}</span>
                             </div>
                             <div class="product_desc">

@@ -100,7 +100,9 @@
                                                 <a href="{% url 'client:product' product_id=product.id %}">{{ product.name }}</a>
                                             </h3>
                                             <div class="price_box">
-                                                <span class="old_price">{{ currency_symbol }}{{ product.variant.original_price }}</span>
+                                                {% if product.variant.original_price %}
+                                                    <span class="old_price">{{ currency_symbol }}{{ product.variant.original_price }}</span>
+                                                {% endif %}
                                                 <span class="current_price">{{ currency_symbol }}{{ product.variant.price }}</span>
                                             </div>
                                             <div class="product_hover w-100">
@@ -203,7 +205,9 @@
                                                 <p>{{ product.short_description }}</p>
                                             </div>
                                             <div class="price_box">
-                                                <span class="old_price">{{ currency_symbol }}{{ product.variant.original_price }}</span>
+                                                {% if product.variant.original_price %}
+                                                    <span class="old_price">{{ currency_symbol }}{{ product.variant.original_price }}</span>
+                                                {% endif %}
                                                 <span class="current_price">{{ currency_symbol }}{{ product.variant.price }}</span>
                                             </div>
 
@@ -327,7 +331,9 @@
                                             <h2>{{ product.name }}</h2>
                                         </div>
                                         <div class="modal_price mb-10">
-                                            <span class="old_price">{{ currency_symbol }}{{ product.variant.original_price }}</span>
+                                            {% if product.variant.original_price %}
+                                                <span class="old_price">{{ currency_symbol }}{{ product.variant.original_price }}</span>
+                                            {% endif %}
                                             <span class="current_price">{{ currency_symbol }}{{ product.variant.price }}</span>
                                         </div>
                                         <div class="see_all">
