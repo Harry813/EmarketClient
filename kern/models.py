@@ -79,6 +79,7 @@ class UserVisitRecord(models.Model):
     user = models.ForeignKey(verbose_name="客户", on_delete=models.CASCADE, to="User", blank=True, null=True)
     user_agent = models.CharField(verbose_name="用户代理", max_length=255, blank=True, null=True)
     session_key = models.CharField(verbose_name="会话密钥", max_length=255, blank=True, null=True)
+    mac_address = models.CharField(verbose_name="MAC地址", max_length=255, blank=True, null=True)
     visited_at = models.DateTimeField(verbose_name="访问时间", auto_now_add=True)
     ip = models.GenericIPAddressField(verbose_name="IP地址", blank=True, null=True)
     referer = models.CharField(verbose_name="来源", max_length=255, blank=True, null=True)

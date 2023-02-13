@@ -8,11 +8,16 @@ def v_record (request):
     ip = request.headers.get("X-Forwarded-For", None)
     if not ip:
         ip = request.META.get("REMOTE_ADDR", "0.0.0.0")
+
+    mac = request.headers.get("X-Forwarded-Mac", None)
+    if not mac:
+        mac = request.META.get("HTTP_X_FORWARDED_MAC", None)
     UserVisitRecord.objects.create(
         user=request.user if request.user.is_authenticated else None,
         user_agent=request.META.get("HTTP_USER_AGENT", None),
-        session_key=request.session.session_key,
+        session=request.session,
         ip=ip,
+        mac=mac,
         referer=request.META.get("HTTP_REFERER", None),
         path=request.path,
         query_string=request.META.get("QUERY_STRING", None),
