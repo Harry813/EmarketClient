@@ -1,0 +1,5 @@
+/.env
+*/migrations
+*/__PYCACHE__
+/media
+/venv
