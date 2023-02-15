@@ -75,30 +75,6 @@ class User(AbstractUser):
         verbose_name_plural = "客户"
 
 
-class UserVisitRecord(models.Model):
-    user = models.ForeignKey(verbose_name="客户", on_delete=models.CASCADE, to="User", blank=True, null=True)
-    user_agent = models.CharField(verbose_name="用户代理", max_length=255, blank=True, null=True)
-    session_key = models.CharField(verbose_name="会话密钥", max_length=255, blank=True, null=True)
-    visited_at = models.DateTimeField(verbose_name="访问时间", auto_now_add=True)
-    ip = models.GenericIPAddressField(verbose_name="IP地址", blank=True, null=True)
-    referer = models.CharField(verbose_name="来源", max_length=255, blank=True, null=True)
-    path = models.CharField(verbose_name="路径", max_length=255, blank=True, null=True)
-    query_string = models.CharField(verbose_name="查询字符串", max_length=255, blank=True, null=True)
-    method = models.CharField(verbose_name="方法", max_length=255, blank=True, null=True)
-    is_synced = models.BooleanField(default=False)
-
-    class Meta:
-        verbose_name = "客户访问记录"
-        verbose_name_plural = "客户访问记录"
-
-    @property
-    def cust (self):
-        return self.user.full_name if self.user else "旅客"
-
-    def __str__ (self):
-        return f"{self.cust}[{self.ip}] @ {self.visited_at}"
-
-
 class Address(RemoteModel):
     def update (self, base_url="address"):
         return super().update(base_url)
