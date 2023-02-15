@@ -8,5 +8,11 @@ from kern.utils.core import send_request
 
 
 class ClientMiddleware(MiddlewareMixin):
-    def process_request (self, request):
-        v_record(request)
+
+    def __call__ (self, request):
+        if "api" in request.path or "assets" in request.path:
+            pass
+        else:
+            v_record(request)
+        response = self.get_response(request)
+        return response

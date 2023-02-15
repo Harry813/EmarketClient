@@ -1,28 +1,29 @@
+import datetime
+
 from django.contrib.auth import authenticate, login
 
-from kern.models import UserVisitRecord, User
+from kern.models import User
 from kern.utils.core import send_request
 
 
 def v_record (request):
     ip = request.headers.get("X-Forwarded-For", None)
     if not ip:
-        ip = request.META.get("REMOTE_ADDR", "0.0.0.0")
+        ip = request.META.get("REMOTE_ADDR", None)
 
-    mac = request.headers.get("X-Forwarded-Mac", None)
-    if not mac:
-        mac = request.META.get("HTTP_X_FORWARDED_MAC", None)
-    UserVisitRecord.objects.create(
-        user=request.user if request.user.is_authenticated else None,
-        user_agent=request.META.get("HTTP_USER_AGENT", None),
-        session=request.session,
-        ip=ip,
-        mac=mac,
-        referer=request.META.get("HTTP_REFERER", None),
-        path=request.path,
-        query_string=request.META.get("QUERY_STRING", None),
-        method=request.method,
-    )
+    if ip:
+        response = send_request("/whitelist/", "GET", payload={"ip": ip})
+        if response.status_code == 204:
+            send_request("/visit/", "POST", {
+                "customer": request.user.id if request.user.is_authenticated else None,
+                "user_agent": request.META.get("HTTP_USER_AGENT", None),
+                "visited_at": datetime.datetime.now(),
+                "ip": ip,
+                "referer": request.META.get("HTTP_REFERER", None),
+                "path": request.path,
+                "query_string": request.META.get("QUERY_STRING", None),
+                "method": request.method,
+            })
 
 
 def create_user (**kwargs):
