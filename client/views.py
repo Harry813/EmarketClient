@@ -78,6 +78,8 @@ def register_view (request):
         "active_page": "user",
         **get_client_params(request=request, page_title=_("注册")),
     }
+    if invitation_code := request.GET.get("invitation_code"):
+        param["invitation_code"] = invitation_code
 
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -88,6 +90,7 @@ def register_view (request):
                 password=form.cleaned_data.get("password"),
                 first_name=form.cleaned_data.get("first_name"),
                 last_name=form.cleaned_data.get("last_name"),
+                invitation_code=form.cleaned_data.get("invitation_code"),
             )
             if user:
                 login(request, user)
@@ -95,9 +98,9 @@ def register_view (request):
             else:
                 form.add_error(None, ValidationError(_("注册失败，请重试"), code="RegisterFailed"))
         else:
-            form = RegisterForm(request.POST)
+            form = RegisterForm(request.POST, initial={"invitation_code": invitation_code})
     else:
-        form = RegisterForm()
+        form = RegisterForm(initial={"invitation_code": invitation_code})
 
     param["form"] = form
     return render(request, 'client/register.html', param)
