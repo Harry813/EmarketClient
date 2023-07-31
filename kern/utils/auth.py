@@ -36,6 +36,7 @@ def create_user (**kwargs):
     password = kwargs.get("password")
     first_name = kwargs.get("first_name")
     last_name = kwargs.get("last_name")
+    invitation_code = kwargs.get("invitation_code", "")
 
     user = User(
         username=username,
@@ -45,13 +46,14 @@ def create_user (**kwargs):
     )
     user.set_password(password)
     response = send_request("/auth/register/", "POST",
-                            {"username": username, "email": email,
-                             "first_name": first_name, "last_name": last_name})
+                            {"username": username, "email": email, "first_name": first_name,
+                             "last_name": last_name, "invitation_code": invitation_code})
     if response.status_code == 201:
         user.id = response.json()["id"]
         user.save()
         return user
     else:
+        del user
         return None
 
 
