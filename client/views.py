@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -98,9 +100,9 @@ def register_view (request):
             else:
                 form.add_error(None, ValidationError(_("注册失败，请重试"), code="RegisterFailed"))
         else:
-            form = RegisterForm(request.POST, initial={"invitation_code": invitation_code})
+            form.add_error(None, ValidationError("测试1", code="RegisterFailed"))
     else:
-        form = RegisterForm(initial={"invitation_code": invitation_code})
+        form = RegisterForm()
 
     param["form"] = form
     return render(request, 'client/register.html', param)
