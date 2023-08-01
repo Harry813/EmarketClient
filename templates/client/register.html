@@ -124,6 +124,27 @@
                                     {% endif %}
                                 </div>
                             </div>
+                            <div>
+                                <label class="form-label" for="{{ form.invitation_code.id_for_label }}">
+                                    {{ form.invitation_code.label }}
+                                    {% if form.invitation_code.field.required %}
+                                        <span style="color: red">*</span>
+                                    {% endif %}
+                                </label>
+                                {% if invitation_code %}
+                                    {% render_field form.invitation_code class="form-control" value=invitation_code disabled="disabled" readonly="readonly" %}
+                                {% else %}
+                                    {% render_field form.invitation_code class="form-control" %}
+                                {% endif %}
+                                <div>
+                                    {% if form.invitation_code.errors %}
+                                        <p class="form-text"
+                                           style="color: red;">{{ form.invitation_code.errors.0 }}</p>
+                                    {% elif form.invitation_code.help_text %}
+                                        <p class="form-text text-muted">{{ form.invitation_code.help_text }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
                             {% comment %}<div>
                                 <p class="form-text" style="color: red;">{{ form.non_field_errors }}</p>
                             </div>{% endcomment %}
