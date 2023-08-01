@@ -132,6 +132,18 @@ class RegisterForm(forms.Form):
         help_text=_('请再次输入密码'),
     )
 
+    invitation_code = forms.CharField(
+        label=_("邀请码"),
+        max_length=8,
+        min_length=8,
+        required=False,
+        help_text=_("邀请码可选，若有邀请码请填写"),
+        error_messages={
+            "max_length": _("邀请码长度不得超过8字符"),
+            "min_length": _("邀请码长度不得少于8字符"),
+        }
+    )
+
     def clean_password (self):
         password = self.cleaned_data.get("password")
         try:
