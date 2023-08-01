@@ -132,7 +132,7 @@ class RegisterForm(forms.Form):
         help_text=_('请再次输入密码'),
     )
 
-    invitation_code = forms.CharField(
+    invitor = forms.CharField(
         label=_("邀请码"),
         max_length=8,
         min_length=8,

@@ -31,23 +31,19 @@ def create_user (**kwargs):
     Create user with username, password, email, first_name, last_name
     Please check the password format before creation
     """
-    username = kwargs.get("username")
-    email = kwargs.get("email")
-    password = kwargs.get("password")
-    first_name = kwargs.get("first_name")
-    last_name = kwargs.get("last_name")
-    invitation_code = kwargs.get("invitation_code", "")
+    password = kwargs.pop("password")
+    invitor = kwargs.pop("invitor", "")
 
-    user = User(
-        username=username,
-        email=email,
-        first_name=first_name,
-        last_name=last_name,
-    )
+    user = User(kwargs)
     user.set_password(password)
     response = send_request("/auth/register/", "POST",
-                            {"username": username, "email": email, "first_name": first_name,
-                             "last_name": last_name, "invitation_code": invitation_code})
+                            {
+                                "invitor": invitor if invitor else "",
+                                "invitation_code": user.invitation_code,
+                                **kwargs
+                            })
+    response.raise_for_status()
+    # todo: 添加错误处理
     if response.status_code == 201:
         user.id = response.json()["id"]
         user.save()

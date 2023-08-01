@@ -92,7 +92,7 @@ def register_view (request):
                 password=form.cleaned_data.get("password"),
                 first_name=form.cleaned_data.get("first_name"),
                 last_name=form.cleaned_data.get("last_name"),
-                invitation_code=form.cleaned_data.get("invitation_code"),
+                invitor=invitation_code if invitation_code else form.cleaned_data.get("invitation_code"),
             )
             if user:
                 login(request, user)
