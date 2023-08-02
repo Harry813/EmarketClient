@@ -174,6 +174,15 @@ class RegisterForm(forms.Form):
         else:
             raise ValidationError("两次输入的密码不一致", code="invalid")
 
+    def clean_invitor(self):
+        invitor = self.cleaned_data.get("invitor")
+        if invitor:
+            try:
+                User.objects.get(invitor=invitor)
+            except User.DoesNotExist:
+                raise ValidationError("邀请码不存在", code="invalid")
+        return invitor
+
 
 class CheckoutForm(forms.Form):
     COUNTRY_CHOICES = (
