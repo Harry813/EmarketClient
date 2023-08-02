@@ -132,6 +132,18 @@ class RegisterForm(forms.Form):
         help_text=_('请再次输入密码'),
     )
 
+    invitor = forms.CharField(
+        label=_("邀请码"),
+        max_length=8,
+        min_length=8,
+        required=False,
+        help_text=_("邀请码可选，若有邀请码请填写"),
+        error_messages={
+            "max_length": _("邀请码长度不得超过8字符"),
+            "min_length": _("邀请码长度不得少于8字符"),
+        }
+    )
+
     def clean_password (self):
         password = self.cleaned_data.get("password")
         try:
@@ -161,6 +173,15 @@ class RegisterForm(forms.Form):
             return password_confirm
         else:
             raise ValidationError("两次输入的密码不一致", code="invalid")
+
+    def clean_invitor(self):
+        invitor = self.cleaned_data.get("invitor")
+        if invitor:
+            try:
+                User.objects.get(invitor=invitor)
+            except User.DoesNotExist:
+                raise ValidationError("邀请码不存在", code="invalid")
+        return invitor
 
 
 class CheckoutForm(forms.Form):

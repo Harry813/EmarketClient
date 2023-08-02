@@ -1,3 +1,7 @@
+import logging
+
+from dotenv import load_dotenv
+
 from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -12,6 +16,8 @@ from kern.models import *
 from kern.utils.auth import login_user, create_user
 from kern.utils.core import send_request
 from kern.utils.utils import *
+
+load_dotenv(verbose=True)
 
 
 def index (request):
@@ -78,6 +84,8 @@ def register_view (request):
         "active_page": "user",
         **get_client_params(request=request, page_title=_("注册")),
     }
+    invitor = request.GET.get("invitor", None)
+    param["invitor"] = invitor
 
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -88,6 +96,7 @@ def register_view (request):
                 password=form.cleaned_data.get("password"),
                 first_name=form.cleaned_data.get("first_name"),
                 last_name=form.cleaned_data.get("last_name"),
+                invitor=invitor if invitor else form.cleaned_data.get("invitor"),
             )
             if user:
                 login(request, user)
@@ -95,7 +104,7 @@ def register_view (request):
             else:
                 form.add_error(None, ValidationError(_("注册失败，请重试"), code="RegisterFailed"))
         else:
-            form = RegisterForm(request.POST)
+            form.add_error(None, ValidationError("测试1", code="RegisterFailed"))
     else:
         form = RegisterForm()
 
