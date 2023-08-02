@@ -44,6 +44,13 @@ class RemoteModel(models.Model):
         abstract = True
 
 
+def generate_invitation_code():
+    while True:
+        code = "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        if not User.objects.filter(invitation_code=code).exists():
+            return code
+
+
 class User(AbstractUser):
     id = models.UUIDField(editable=False, primary_key=True)
     email = models.EmailField(verbose_name='邮箱', max_length=100, unique=True)
@@ -51,7 +58,7 @@ class User(AbstractUser):
     first_name = models.CharField(verbose_name='名', max_length=30)
     last_name = models.CharField(verbose_name='姓', max_length=30)
     invitation_code = models.CharField(verbose_name='邀请码', max_length=8, unique=True,
-                                       default="".join(random.choices(string.ascii_uppercase + string.digits, k=8)))
+                                       default=generate_invitation_code)
     date_joined = models.DateTimeField(verbose_name='创建日期', auto_now_add=True)
     last_login = models.DateTimeField(verbose_name='上次登录', auto_now=True)
 
