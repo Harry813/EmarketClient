@@ -1,8 +1,11 @@
 import datetime
+import logging
+import uuid
 
 from django.contrib.auth import authenticate, login
+from requests import HTTPError
 
-from kern.models import User
+from kern.models import User, generate_invitation_code
 from kern.utils.core import send_request
 
 
@@ -26,30 +29,37 @@ def v_record (request):
             })
 
 
-def create_user (**kwargs):
+def create_user(**kwargs):
     """
     Create user with username, password, email, first_name, last_name
     Please check the password format before creation
     """
+    logging.info(f"Creating user: {kwargs}")
     password = kwargs.pop("password")
     invitor = kwargs.pop("invitor", "")
 
-    user = User(kwargs)
-    user.set_password(password)
+    invitation_code = generate_invitation_code()
     response = send_request("/auth/register/", "POST",
                             {
                                 "invitor": invitor if invitor else "",
-                                "invitation_code": user.invitation_code,
+                                "invitation_code": invitation_code,
                                 **kwargs
                             })
-    response.raise_for_status()
-    # todo: 添加错误处理
-    if response.status_code == 201:
-        user.id = response.json()["id"]
-        user.save()
-        return user
-    else:
-        del user
+    try:
+        response.raise_for_status()
+        if response.status_code == 201:
+            user = User.objects.create(
+                id=uuid.UUID(response.json()["id"]),
+                invitation_code=invitation_code,
+                **kwargs
+            )
+            user.set_password(password)
+            user.save()
+            return user
+        else:
+            raise HTTPError()
+    except HTTPError:
+        logging.error(f"ERR: {response.status_code}: {response.text}")
         return None
 
 
