@@ -125,25 +125,26 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="form-label" for="{{ form.invitor.id_for_label }}">
-                                    {{ form.invitor.label }}
-                                    {% if form.invitor.field.required %}
-                                        <span style="color: red">*</span>
-                                    {% endif %}
-                                </label>
-                                {% if invitation_code %}
-                                    {% render_field form.invitor class="form-control" value=invitation_code disabled="disabled" readonly="readonly" %}
+                                {% if invitor %}
+                                    {% render_field form.invitor class="form-control hidden" value=invitation_code disabled="disabled" readonly="readonly" %}
                                 {% else %}
+                                    <label class="form-label" for="{{ form.invitor.id_for_label }}">
+                                        {{ form.invitor.label }}
+                                        {% if form.invitor.field.required %}
+                                            <span style="color: red">*</span>
+                                        {% endif %}
+                                    </label>
                                     {% render_field form.invitor class="form-control" %}
+                                    <div>
+                                        {% if form.invitor.errors %}
+                                            <p class="form-text"
+                                               style="color: red;">{{ form.invitor.errors.0 }}</p>
+                                        {% elif form.invitor.help_text %}
+                                            <p class="form-text text-muted">{{ form.invitor.help_text }}</p>
+                                        {% endif %}
+                                    </div>
                                 {% endif %}
-                                <div>
-                                    {% if form.invitor.errors %}
-                                        <p class="form-text"
-                                           style="color: red;">{{ form.invitor.errors.0 }}</p>
-                                    {% elif form.invitor.help_text %}
-                                        <p class="form-text text-muted">{{ form.invitor.help_text }}</p>
-                                    {% endif %}
-                                </div>
+
                             </div>
                             {% comment %}<div>
                                 <p class="form-text" style="color: red;">{{ form.non_field_errors }}</p>
