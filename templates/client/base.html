@@ -57,29 +57,13 @@
 <script src="{% static 'client/js/jqquery.ripples.js' %}"></script>
 <script src="{% static 'client/js/jquery.cookie.js' %}"></script>
 <script src="{% static 'client/js/bpopup.js' %}"></script>
+<script src="{% static 'client/js/custom.js' %}"></script>
 
 <!-- Main JS -->
 <script src="{% static 'client/js/main.js' %}"></script>
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    const notyf = new Notyf({
-        duration: 1500,
-        types: [
-            {
-                type: 'info',
-                background: 'blue',
-                icon: false
-            }
-        ]
-    });
-    $(document).ready(function () {
-        $(".select2").select2({
-            width: 'resolve',
-            theme: "bootstrap-5",
-            minimumResultsForSearch: Infinity,
-        });
-    })
-</script>
+{% block js %}
+{% endblock %}
 <script>
     $(document).on('click', 'a.add_wishlist, button.add_wishlist', function (e) {
         e.preventDefault();
