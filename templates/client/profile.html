@@ -30,8 +30,10 @@
                         <!-- Nav tabs -->
                         <div class="dashboard_tab_button">
                             <ul role="tablist" class="nav flex-column dashboard-list">
+                                <li><a href="#info" data-bs-toggle="tab"
+                                       class="nav-link active text-white">{% trans "信息" %}</a></li>
                                 <li><a href="#orders" data-bs-toggle="tab"
-                                       class="nav-link active">{% trans "订单" %}</a></li>
+                                       class="nav-link text-white">{% trans "订单" %}</a></li>
                                 {# <li><a href="#downloads" data-bs-toggle="tab" class="nav-link">Downloads</a></li>#}
                                 <li><a href="{% url 'client:logout' %}" class="nav-link">{% trans "登出" %}</a></li>
                             </ul>
@@ -40,8 +42,29 @@
                     <div class="col-sm-12 col-md-9 col-lg-9">
                         <!-- Tab panes -->
                         <div class="tab-content dashboard_content">
-                            <div class="tab-pane fade show active" id="orders">
-                                <h3>Orders</h3>
+                            <div class="tab-pane fade show active" id="info">
+                                <h3 class="card-title mb-4">{% trans "用户信息" %}</h3>
+
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <h5 class="card-title">{% trans "我的邀请码" %}</h5>
+                                                <div class="input-group mb-3">
+                                                    <input class="form-control" type="text" id="invitation_url"
+                                                           readonly="readonly" value="{{ invitation_url }}">
+                                                    <button class="btn btn-outline-secondary" type="button"
+                                                            id="button-copy">
+                                                        <i class="fa-regular fa-copy"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="orders">
+                                <h3>{% trans "订单" %}</h3>
                                 <div class="table-responsive">
                                     <table class="table">
                                         {# todo: 更换为datatable #}
@@ -81,5 +104,16 @@
             </div>
         </div>
     </section>
-    <!-- my account end   -->
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    <script>
+        // Copy the invitation url to clipboard when click the copy button
+        $("#button-copy").click(function () {
+            $("#invitation_url").select();
+            document.execCommand("copy");
+            notyf.success("{% trans '复制成功' %}")
+        });
+    </script>
 {% endblock %}
