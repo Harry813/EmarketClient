@@ -297,6 +297,7 @@ def profile_view (request):
     u = User.objects.get(id=request.user.id)
     orders = Order.objects.filter(user=u, )
     param["orders"] = orders
+    param["invitation_url"] = os.getenv("URLS").split(" ")[0] + "/register/?invitor=" + u.invitation_code
 
     return render(request, 'client/profile.html', param)
 
