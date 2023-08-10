@@ -1,5 +1,6 @@
 import json
 
+from django.contrib.auth import logout
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, permission_classes
