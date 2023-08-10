@@ -17,8 +17,12 @@ from kern.utils.sync import sync
 @permission_classes([HasAPIKey | IsAuthenticated])
 def reset_password(request, format=None):
     if request.headers.get("Authorization", None):
-        uid = request.data.get("uid")
-        password = request.data.get("password")
+        try:
+            uid = request.data.get("uid")
+            password = request.data.get("password")
+        except KeyError:
+            return Response({"msg": _("无效的请求")}, status=HTTP_400_BAD_REQUEST)
+
         try:
             user = User.objects.get(pk=uid)
         except User.DoesNotExist:
@@ -29,10 +33,11 @@ def reset_password(request, format=None):
     else:
         old_password = request.data.get("old_password")
         new_password = request.data.get("new_password")
-        user = request.user
+        user = User.objects.get(pk=request.user.pk)
         if user.check_password(old_password):
             user.set_password(new_password)
             user.save()
+            logout(request)
             return Response({"msg": _("密码已重置")}, status=HTTP_200_OK)
         else:
             return Response({"msg": _("原密码错误")}, status=HTTP_400_BAD_REQUEST)
