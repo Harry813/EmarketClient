@@ -84,8 +84,8 @@ def register_view (request):
         "active_page": "user",
         **get_client_params(request=request, page_title=_("注册")),
     }
-    invitor = request.GET.get("invitor", None)
-    param["invitor"] = invitor
+    invitor = request.GET.get("ref", None)
+    param["ref"] = invitor
 
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -297,6 +297,7 @@ def profile_view (request):
     u = User.objects.get(id=request.user.id)
     orders = Order.objects.filter(user=u, )
     param["orders"] = orders
+    param["invitation_url"] = request.build_absolute_uri(reverse("client:register")) + "?ref=" + str(u.id)
 
     return render(request, 'client/profile.html', param)
 
