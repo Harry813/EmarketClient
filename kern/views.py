@@ -16,14 +16,13 @@ from kern.utils.sync import sync
 @api_view(["POST"])
 @permission_classes([HasAPIKey | IsAuthenticated])
 def reset_password(request, format=None):
-    # 如果请求header中包含 API Key 的请求，是来自远程管理端的操作
-    # 传递的格式应为{"uid": "uuid as str", "password": "new password"}
-    # 如果request中包含用户信息，则是来自本地的操作
-    # 传递格式应为{"old_password": "old password", "new_password": "new password"}
-    if request.auth:
+    if request.headers.get("Authorization", None):
         uid = request.data.get("uid")
         password = request.data.get("password")
-        user = User.objects.get(pk=uid)
+        try:
+            user = User.objects.get(pk=uid)
+        except User.DoesNotExist:
+            return Response({"msg": _("用户不存在")}, status=HTTP_404_NOT_FOUND)
         user.set_password(password)
         user.save()
         return Response({"msg": _("密码已重置")}, status=HTTP_200_OK)
