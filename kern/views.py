@@ -13,6 +13,33 @@ from kern.utils.sync import sync
 
 
 @csrf_exempt
+@api_view(["POST"])
+@permission_classes([HasAPIKey | IsAuthenticated])
+def reset_password(request, format=None):
+    # 如果请求header中包含 API Key 的请求，是来自远程管理端的操作
+    # 传递的格式应为{"uid": "uuid as str", "password": "new password"}
+    # 如果request中包含用户信息，则是来自本地的操作
+    # 传递格式应为{"old_password": "old password", "new_password": "new password"}
+    if request.auth:
+        uid = request.data.get("uid")
+        password = request.data.get("password")
+        user = User.objects.get(pk=uid)
+        user.set_password(password)
+        user.save()
+        return Response({"msg": _("密码已重置")}, status=HTTP_200_OK)
+    else:
+        old_password = request.data.get("old_password")
+        new_password = request.data.get("new_password")
+        user = request.user
+        if user.check_password(old_password):
+            user.set_password(new_password)
+            user.save()
+            return Response({"msg": _("密码已重置")}, status=HTTP_200_OK)
+        else:
+            return Response({"msg": _("原密码错误")}, status=HTTP_400_BAD_REQUEST)
+
+
+@csrf_exempt
 @api_view(['POST', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def wishlist_api (request, format=None):
