@@ -45,63 +45,115 @@
                             <div class="tab-pane fade show active" id="info">
                                 <h3 class="card-title mb-4">{% trans "用户信息" %}</h3>
 
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <h5 class="card-title">{% trans "我的邀请码" %}</h5>
-                                                <div class="input-group mb-3">
-                                                    <input class="form-control" type="text" id="invitation_url"
-                                                           readonly="readonly" value="{{ invitation_url }}">
-                                                    <button class="btn btn-outline-secondary" type="button"
-                                                            id="button-copy">
-                                                        <i class="fa-regular fa-copy"></i>
-                                                    </button>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <h5 class="card-title">{% trans "我的邀请码" %}</h5>
+                                                        <div class="input-group mb-3">
+                                                            <label for="invitation_url" class="visually-hidden"></label>
+                                                            <input class="form-control" type="text" id="invitation_url"
+                                                                   readonly="readonly" value="{{ invitation_url }}">
+                                                            <button class="btn btn-outline-secondary" type="button"
+                                                                    id="button-copy">
+                                                                <i class="fa-regular fa-copy"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h3 class="card-title my-4">{% trans "管理" %}</h3>
+                                <div class="row">
+                                    <div class="col-md-6 my-3">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="card-title">{% trans "修改密码" %}</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <form id="reset-pswd-form">
+                                                        <div class="col-12 mb-3">
+                                                            <label class="form-label" for="old_password">
+                                                                {% translate '旧密码' %}<span
+                                                                    style="color: red">*</span>
+                                                            </label>
+                                                            <input type="password" name="old_password" id="old_password"
+                                                                   class="form-control">
+                                                        </div>
+                                                        <div class="col-12 mb-3">
+                                                            <label class="form-label" for="new_password">
+                                                                {% translate '新密码' %}<span
+                                                                    style="color: red">*</span>
+                                                            </label>
+                                                            <input type="password" name="new_password" id="new_password"
+                                                                   class="form-control">
+                                                        </div>
+                                                        <div class="col-12 mb-3">
+                                                            <label class="form-label" for="re_password">
+                                                                {% translate '重新输入密码' %}<span
+                                                                    style="color: red">*</span>
+                                                            </label>
+                                                            <input type="password" name="re_password" id="re_password"
+                                                                   class="form-control">
+                                                        </div>
+                                                        <div class="col-12 mb-3">
+                                                            <button type="submit" class="btn btn-primary w-100">
+                                                                {% translate '提交' %}
+                                                            </button>
+                                                        </div>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="orders">
-                                <h3>{% trans "订单" %}</h3>
-                                <div class="table-responsive">
-                                    <table class="table">
-                                        {# todo: 更换为datatable #}
-                                        <thead>
+                        </div>
+                        <div class="tab-pane fade" id="orders">
+                            <h3>{% trans "订单" %}</h3>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    {# todo: 更换为datatable #}
+                                    <thead>
+                                    <tr>
+                                        <th>{% trans "单号" %}</th>
+                                        <th>{% trans "日期" %}</th>
+                                        <th>{% trans "状态" %}</th>
+                                        <th>{% trans "概要" %}</th>
+                                        <th>{% trans "操作" %}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for order in orders %}
                                         <tr>
-                                            <th>{% trans "单号" %}</th>
-                                            <th>{% trans "日期" %}</th>
-                                            <th>{% trans "状态" %}</th>
-                                            <th>{% trans "概要" %}</th>
-                                            <th>{% trans "操作" %}</th>
+                                            <td>#{{ order.short_id|upper }}</td>
+                                            <td>{{ order.date }}</td>
+                                            <td>{{ order.get_status_display }}</td>
+                                            <td>{{ order.quantity }}{% trans "件物品" %},
+                                                {{ currency_symbol }}{{ order.total }}</td>
+                                            <td><a href="{% url 'client:order' order.id %}"
+                                                   class="view">{% trans "查看" %}</a></td>
                                         </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for order in orders %}
-                                            <tr>
-                                                <td>#{{ order.short_id|upper }}</td>
-                                                <td>{{ order.date }}</td>
-                                                <td>{{ order.get_status_display }}</td>
-                                                <td>{{ order.quantity }}{% trans "件物品" %},
-                                                    {{ currency_symbol }}{{ order.total }}</td>
-                                                <td><a href="{% url 'client:order' order.id %}"
-                                                       class="view">{% trans "查看" %}</a></td>
-                                            </tr>
-                                        {% empty %}
-                                            <tr>
-                                                <td colspan="5"
-                                                    class="text-center">{% trans "暂无订单，快去选购吧！" %}</td>
-                                            </tr>
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="5"
+                                                class="text-center">{% trans "暂无订单，快去选购吧！" %}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </section>
 {% endblock %}
@@ -109,11 +161,56 @@
 {% block js %}
     {{ block.super }}
     <script>
-        // Copy the invitation url to clipboard when click the copy button
         $("#button-copy").click(function () {
             $("#invitation_url").select();
             document.execCommand("copy");
             notyf.success("{% trans '复制成功' %}")
         });
+
+        $("#reset-pswd-form").submit(function (e) {
+            e.preventDefault();
+            let old_password = $("#old_password").val();
+            let new_password = $("#new_password").val();
+            let re_password = $("#re_password").val();
+            let csrf_token = "{{ csrf_token }}";
+
+            console.log(old_password, new_password, re_password)
+
+            if (new_password === old_password) {
+                notyf.error("{% translate '新密码不能与旧密码相同' %}")
+                return false
+            }
+
+            if (new_password !== re_password) {
+                notyf.error("{% trans '两次输入的密不同' %}")
+                return false
+            }
+
+            let url = "{% url 'kern:reset_password' %}";
+            $.ajax({
+                url: url,
+                type: "POST",
+                headers: {
+                    "X-CSRFToken": csrf_token
+                },
+                data: {
+                    "old_password": old_password,
+                    "new_password": new_password
+                },
+                success: function (res, status, xhr) {
+                    if (xhr.status === 200) {
+                        notyf.success(res.msg);
+                        setTimeout(function () {
+                            window.location.reload()
+                        }, 1000)
+                    } else {
+                        notyf.error(res.msg)
+                    }
+                },
+                error: function (res) {
+                    notyf.error(res.responseJSON.msg)
+                }
+            })
+        })
     </script>
 {% endblock %}
