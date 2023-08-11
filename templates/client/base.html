@@ -31,8 +31,7 @@
 
 </head>
 <body>
-{% block body %}
-{% endblock %}
+{% block body %}{% endblock %}
 
 <!-- Plugins JS -->
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
@@ -61,18 +60,11 @@
 <!-- Main JS -->
 <script>
     const csrfToken = "{{ csrf_token }}"
+    const kern_cart = "{% url 'kern:cart' %}"
+    const kern_wishlist = "{% url 'kern:wishlist' %}"
 </script>
 <script src="{% static 'client/js/main.js' %}"></script>
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-{% block js %}
-{% endblock %}
-<script>
-    $(document).on('click', 'a.add_wishlist, button.add_wishlist', add_wishlist);
-    $(document).on('click', 'a.remove_wishlist, button.remove_wishlist', remove_wishlist);
-    $(document).on('click', 'a.add_cart, button.add_cart', add_cart);
-    $(document).on('click', 'a.remove_cart, button.remove_cart', remove_cart);
-    $(document).on('submit', 'form.add_cart_form', submit_cart);
-</script>
-
+{% block js %}{% endblock %}
 </body>
 </html>
