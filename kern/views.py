@@ -1,4 +1,5 @@
 import json
+import os
 
 from django.contrib.auth import logout
 from django.utils.translation import gettext as _
@@ -47,7 +48,7 @@ def reset_password(request, format=None):
 @csrf_exempt
 @api_view(['POST', 'DELETE'])
 @permission_classes([IsAuthenticated])
-def wishlist_api (request, format=None):
+def wishlist_api(request, format=None):
     if request.method == "POST":
         user = User.objects.get(pk=request.user.pk)
         variant_id = request.data.get("id")
@@ -67,7 +68,7 @@ def wishlist_api (request, format=None):
 @csrf_exempt
 @api_view(['GET', 'POST', 'PUSH', 'DELETE'])
 @permission_classes([IsAuthenticated])
-def cart_api (request):
+def cart_api(request):
     if request.method == "GET":
         items = CartItem.objects.filter(user=request.user)
         total_price = sum([item.variant.price * item.quantity for item in items])
@@ -75,7 +76,7 @@ def cart_api (request):
     elif request.method == "POST":
         user = User.objects.get(pk=request.user.pk)
         variant_id = request.data.get("id", None)
-        quantity = request.data.get("quantity", 1)
+        quantity = int(request.data.get("quantity", 1))
         obj, is_created = CartItem.objects.get_or_create(user=user, variant_id=variant_id)
         if not is_created:
             obj.quantity += quantity
@@ -124,7 +125,7 @@ def cart_api (request):
 @csrf_exempt
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def checkout_api (request):
+def checkout_api(request):
     if request.method == "POST":
         user = User.objects.get(pk=request.user.pk)
 
@@ -167,7 +168,25 @@ def checkout_api (request):
 @csrf_exempt
 @api_view(['GET'])
 @permission_classes([HasAPIKey])
-def sync_api (request):
+def sync_api(request):
     if request.method == "GET":
         sync()
         return Response({"msg": "SUCCESS"}, status=HTTP_200_OK)
+
+
+@csrf_exempt
+@api_view(['GET'])
+@permission_classes([HasAPIKey])
+def sysinfo_api(request):
+    if request.method == "GET":
+        payload = {
+            "name": os.getenv("BRAND"),
+            "url": os.getenv("URL"),
+            "ip": os.getenv("IPv4"),
+            "db_type": os.getenv('DB_TYPE', 'mysql'),
+            "db_user": os.getenv('DB_USER', 'EmarketClient'),
+            "db_password": os.getenv('DB_PASSWORD'),
+            'db_host': os.getenv("DB_HOST") if os.getenv("DB_HOST") else os.getenv("IPv4"),
+            'db_port': os.getenv("DB_PORT", '3306'),
+        }
+        return Response(payload, status=HTTP_200_OK)
