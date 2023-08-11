@@ -85,7 +85,7 @@ def register_view (request):
         **get_client_params(request=request, page_title=_("注册")),
     }
     invitor = request.GET.get("ref", None)
-    param["ref"] = invitor
+    param["invitor"] = invitor
 
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -104,7 +104,7 @@ def register_view (request):
             else:
                 form.add_error(None, ValidationError(_("注册失败，请重试"), code="RegisterFailed"))
         else:
-            form.add_error(None, ValidationError("测试1", code="RegisterFailed"))
+            form.add_error(None, ValidationError(_("注册失败，请重试"), code="RegisterFailed"))
     else:
         form = RegisterForm()
 
@@ -297,7 +297,7 @@ def profile_view (request):
     u = User.objects.get(id=request.user.id)
     orders = Order.objects.filter(user=u, )
     param["orders"] = orders
-    param["invitation_url"] = request.build_absolute_uri(reverse("client:register")) + "?ref=" + str(u.id)
+    param["invitation_url"] = request.build_absolute_uri(reverse("client:register")) + "?ref=" + u.invitation_code
 
     return render(request, 'client/profile.html', param)
 
