@@ -6,7 +6,7 @@ import requests as rq
 from EmarketClient import settings
 
 
-def send_request (url, method, payload=None, headers=None, is_json=False):
+def send_request(url, method, payload=None, headers=None, is_json=False):
     """
     Send request to url
     """
