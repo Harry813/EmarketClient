@@ -20,7 +20,7 @@ from kern.utils.utils import *
 load_dotenv(verbose=True)
 
 
-def index (request):
+def index(request):
     return redirect("client:shop")
     # params = {
     #     "active_page": "index",
@@ -38,7 +38,7 @@ def index (request):
 #     return HttpResponse(response)
 
 
-def login_view (request):
+def login_view(request):
     param = {
         "active_page": "user",
         **get_client_params(request=request, page_title=_("登录")),
@@ -74,12 +74,12 @@ def login_view (request):
     return render(request, 'client/login.html', param)
 
 
-def logout_view (request):
+def logout_view(request):
     logout(request)
     return redirect("client:index")
 
 
-def register_view (request):
+def register_view(request):
     param = {
         "active_page": "user",
         **get_client_params(request=request, page_title=_("注册")),
@@ -112,7 +112,7 @@ def register_view (request):
     return render(request, 'client/register.html', param)
 
 
-def products_view (request):
+def products_view(request):
     param = {
         "active_page": "shop",
         **get_client_params(request=request, page_title=_("产品")),
@@ -128,7 +128,7 @@ def products_view (request):
     return render(request, 'client/shop.html', param)
 
 
-def product_detail_view (request, product_id):
+def product_detail_view(request, product_id):
     param = {
         "active_page": "shop",
         **get_client_params(request=request, page_title=_("产品")),
@@ -140,7 +140,7 @@ def product_detail_view (request, product_id):
 
 
 @login_required(login_url="client:login")
-def wishlist_view (request):
+def wishlist_view(request):
     param = {
         "active_page": "user",
         **get_client_params(request=request, page_title=_("心愿单")),
@@ -151,7 +151,7 @@ def wishlist_view (request):
 
 
 @login_required(login_url="client:login")
-def cart_view (request):
+def cart_view(request):
     param = {
         "active_page": "user",
         **get_client_params(request=request, page_title=_("购物车")),
@@ -160,7 +160,7 @@ def cart_view (request):
 
 
 @login_required(login_url="client:login")
-def checkout_view (request):
+def checkout_view(request):
     param = {
         "active_page": "user",
         **get_client_params(request=request, page_title=_("结账")),
@@ -256,7 +256,7 @@ def checkout_view (request):
 
 
 @login_required(login_url="client:login")
-def pay_view (request, order_id):
+def pay_view(request, order_id):
     param = {
         "active_page": "user",
         "order_id": order_id,
@@ -275,7 +275,7 @@ def pay_view (request, order_id):
 
 
 @login_required(login_url="client:login")
-def pay_finish (request, order_id):
+def pay_finish(request, order_id):
     u = User.objects.get(id=request.user.id)
 
     response = send_request("/pay/", "GET", {"id": order_id, "mode": "finish"})
@@ -288,7 +288,7 @@ def pay_finish (request, order_id):
 
 
 @login_required(login_url="client:login")
-def profile_view (request):
+def profile_view(request):
     param = {
         "active_page": "user",
         **get_client_params(request=request, page_title=_("个人信息")),
@@ -303,7 +303,7 @@ def profile_view (request):
 
 
 @login_required(login_url="client:login")
-def order_view (request, order_id):
+def order_view(request, order_id):
     param = {
         "active_page": "user",
         **get_client_params(request=request, page_title=_("订单详情")),
