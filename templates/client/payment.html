@@ -25,8 +25,8 @@
                             <td>
                                 {% if to_currency is not None and to_amount is not None %}
                                     <span>{{ from_amount }} {{ from_currency }}</span>
-                                    <span><i
-                                            class="fa-solid fa-right-left"></i> <strong>{{ to_amount }} {{ to_currency }}</strong></span>
+                                    <span><i class="fa-solid fa-right-left"></i>
+                                        <strong>{{ to_amount }} {{ to_currency }}</strong></span>
                                 {% else %}
                                     <span><strong>{{ from_amount }} {{ from_currency }}</strong></span>
                                 {% endif %}
@@ -100,12 +100,23 @@
                             <tr>
                                 <td colspan="2">{% trans "转账前请确认输入的信息的准确，错误的信息输入可能会导致您的钱款无法被找回" %}</td>
                             </tr>
+                        {% elif type == "BALANCE" %}
+                            <tr>
+                                <td>{% translate '余额' %}</td>
+                                <td>{{ balance }} USDT <strong><i
+                                        class="fa-solid fa-arrow-right"></i> {{ balance_after }} USDT</strong></td>
+                            </tr>
+                            {% if err %}
+                                <tr>
+                                    <td colspan="2">{% trans "转账前请确认输入的信息的准确，错误的信息输入可能会导致您的钱款无法被找回" %}</td>
+                                </tr>
+                            {% endif %}
                         {% endif %}
                     </table>
                     <div class="d-flex justify-content-center mt-5">
                         <a href="{% url 'client:pay_finish' order_id %}" id="pay_success"
                            class="btn btn-success py-3 px-5 text-center">
-                            <i class="fa-solid fa-check"></i> 我已转账
+                            <i class="fa-solid fa-check"></i> {% translate '我已付款' %}
                         </a>
                     </div>
                 </div>

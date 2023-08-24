@@ -483,6 +483,12 @@ class CheckoutForm(forms.Form):
         }
     )
 
+    use_bind_balance = forms.BooleanField(
+        label=_("使用绑定余额支付"),
+        required=False,
+        initial=True,
+    )
+
     def clean (self):
         cleaned_data = super().clean()
         ship_to_different_address = cleaned_data.get("ship_to_different_address")
