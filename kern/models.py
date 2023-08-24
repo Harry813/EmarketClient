@@ -1,4 +1,5 @@
 import datetime
+import logging
 import random
 import string
 from decimal import Decimal
@@ -6,11 +7,14 @@ from decimal import Decimal
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext as _
+from requests import HTTPError
 
 from kern.utils.core import send_request
 
 
 class RemoteModel(models.Model):
+    URL = None
+
     id = models.UUIDField(primary_key=True)
     raw_data = models.JSONField(default=dict)
     updated_at = models.DateTimeField(auto_now=True)
@@ -20,8 +24,17 @@ class RemoteModel(models.Model):
         diff = datetime.datetime.now(datetime.timezone.utc) - self.updated_at
         return diff > datetime.timedelta(hours=1)
 
-    def update (self, base_url=None):
-        response = send_request(f"/{base_url}/", "GET", {"mode": "retrieve", "id": str(self.id)})
+    def update(self):
+        response = send_request(f"/{self.URL}/", "GET", {"mode": "retrieve", "id": str(self.id)})
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            # todo: 添加日志
+            # todo: 添加开发人员警报
+            logging.warning(f"Failed to update {self.__class__.__name__} {self.id}")
+            logging.info(response.text)
+            return None
+
         if response.status_code == 200:
             if response.json() != self.raw_data:
                 self.raw_data = response.json()
@@ -49,6 +62,12 @@ def generate_invitation_code():
         code = "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
         if not User.objects.filter(invitation_code=code).exists():
             return code
+
+
+class RemoteManager(models.Manager):
+    def __delete__(self, instance):
+        instance.delete()
+        super().__delete__(instance)
 
 
 class User(AbstractUser):
@@ -87,8 +106,7 @@ class User(AbstractUser):
 
 
 class Address(RemoteModel):
-    def update (self, base_url="address"):
-        return super().update(base_url)
+    URL = "address"
 
     @property
     def first_name (self):
@@ -132,6 +150,8 @@ class Address(RemoteModel):
 
 
 class Product(RemoteModel):
+    URL = "product"
+
     @property
     def name (self):
         return self.data.get("name", "")
@@ -183,13 +203,14 @@ class Product(RemoteModel):
 
     @property
     def variant (self):
-        return self.variants[0]
-
-    def update (self, base_url="product"):
-        return super().update(base_url=base_url)
+        if self.variants:
+            return self.variants[0]
+        return None
 
 
 class ProductVariant(RemoteModel):
+    URL = 'variant'
+
     @property
     def price (self):
         # float to decimal, 2 decimal places
@@ -202,9 +223,6 @@ class ProductVariant(RemoteModel):
     @property
     def product (self):
         return Product.objects.get(id=self.data.get("product"))
-
-    def update (self, base_url="variant"):
-        return super().update(base_url=base_url)
 
 
 class CartItem(models.Model):
@@ -282,6 +300,8 @@ class WishlistItem(models.Model):
 
 
 class Order(RemoteModel):
+    URL = "order"
+
     STATUS = {
         "CREATED": _("已创建"),
         "PAID": _("已付款"),
@@ -306,9 +326,6 @@ class Order(RemoteModel):
     ]
     user = models.ForeignKey(verbose_name="客户", on_delete=models.CASCADE, to="User")
     is_active = models.BooleanField(verbose_name="是否激活", default=True)
-
-    def update (self, base_url="order"):
-        return super().update(base_url=base_url)
 
     def __str__ (self):
         return f"ORD #{str(self.id)[-6:]}"
@@ -381,3 +398,33 @@ class Order(RemoteModel):
         if self.is_active:
             Order.objects.filter(user=self.user, is_active=True).update(is_active=False)
         super().save(*args, **kwargs)
+
+
+class ErrorLog(models.Model):
+    """
+    todo: 尚未完成
+    """
+    STATUS = [
+        (0, "未发送"),
+        (1, "已发送")
+    ]
+
+    id = models.UUIDField(primary_key=True, editable=False)
+    detail = models.TextField()
+    status = models.PositiveSmallIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def send(self):
+        res = send_request("/error/", "POST", {"detail": self.detail})
+
+        try:
+            res.raise_for_status()
+        except HTTPError:
+            return False
+
+        if res.status_code == 200:
+            self.status = 1
+            self.save()
+            return True
+        else:
+            return False
