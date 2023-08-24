@@ -422,6 +422,26 @@
                                         {% endif %}
                                     </div>
                                 </div>
+                                <div class="panel-default mb-20">
+                                    <div class="form-check">
+                                        {% render_field form.use_bind_balance type="checkbox" %}
+                                        <label class="form-check-label"
+                                               for="{{ form.use_bind_balance.id_for_label }}">
+                                            {{ form.use_bind_balance.label }}
+                                            {% if form.use_bind_balance.field.required %}
+                                                <span style="color: red">*</span>
+                                            {% endif %}
+                                        </label>
+                                    </div>
+                                    <div>
+                                        {% if form.use_bind_balance.errors %}
+                                            <p class="form-text"
+                                               style="color: red;">{{ form.use_bind_balance.errors.0 }}</p>
+                                        {% elif form.use_bind_balance.help_text %}
+                                            <p class="form-text text-muted">{{ form.use_bind_balance.help_text }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
                                 <div>
                                     {% blocktrans %}
                                         <p><strong>下单须知：</strong></p>
