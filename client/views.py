@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -236,16 +236,27 @@ def checkout_view(request):
             data = {
                 "order": order.id,
                 "payment_method": form.cleaned_data.get("payment_method"),
+                "use_bind_balance": form.cleaned_data.get("use_bind_balance", True),
                 "billing_address": billing_address_id,
                 "shipping_address": shipping_address_id,
                 "amount": order.total,
                 "currency": "GBP",
             }
             response = send_request("/pay/", "POST", data)
-            if response.status_code == 200:
-                return redirect("client:pay", order_id=order.id)
+            try:
+                response.raise_for_status()
+                logging.info(response.json())
+            except HTTPError as e:
+                if response.status_code == 402:
+                    form.add_error(None,
+                                   ValidationError(_("账户余额不足，支付失败，请更换支付方式"),
+                                                   code="CheckoutFailed"))
+                else:
+                    logging.warning(f"Error: {e} - {response.json()}")
+                    form.add_error(None, ValidationError(_("支付失败，请重试"), code="CheckoutFailed"))
             else:
-                form.add_error(None, "信息拉取失败，请稍后重试")
+                logging.info("pay success")
+                return redirect("client:pay", order_id=order.id)
         else:
             form = CheckoutForm(request.POST, initial=form_default_data)
     else:
@@ -267,10 +278,13 @@ def pay_view(request, order_id):
     # todo: 检查订单状态，并执行相应跳转
     order.update()
     response = send_request("/pay/", "GET", {"id": order.id, "mode": "pay"})
-    if response.status_code == 200:
-        param.update(response.json())
-    else:
+    try:
+        response.raise_for_status()
+    except HTTPError as e:
+        logging.warning(f"Error: {e} - {response.json()}")
         return HttpResponseBadRequest(response)
+    else:
+        param.update(response.json())
     return render(request, 'client/payment.html', param)
 
 
