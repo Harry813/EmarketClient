@@ -70,7 +70,7 @@
                                     </div>
                                     <div class="cart_subtotal">
                                         <p>{% trans "快递" %}</p>
-                                        <p class="cart_amount"> {{ currency_symbol }}10.00</p>
+                                        <p class="cart_amount"> {{ currency_symbol }}{{ order.shipping }}</p>
                                     </div>
                                     <div class="cart_subtotal">
                                         <p>{% trans "总计" %}</p>
