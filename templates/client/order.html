@@ -80,10 +80,12 @@
                                         <div class="cart_subtotal">
                                             <p>{% trans "付款方式" %}</p>
                                             <p class="cart_amount">{{ order.payment.method }}
-                                                <button type="button" class="btn btn-sm"
-                                                        onclick="window.location.href='{% url 'client:pay' order_id=order.pk %}'">
-                                                    <i class="fa-solid fa-right-long"></i>
-                                                </button>
+                                                {% if order.status == "CREATED" %}
+                                                    <button type="button" class="btn btn-sm ms-3"
+                                                            onclick="window.location.href='{% url 'client:pay' order_id=order.pk %}'">
+                                                        <i class="fa-solid fa-right-long"></i>
+                                                    </button>
+                                                {% endif %}
                                             </p>
                                         </div>
                                     {% endif %}
@@ -119,7 +121,6 @@
                                         <p>{% trans "追踪单号" %}</p>
                                         <p class="cart_amount"><a href="{{ order.shipment.tracking_url }}">
                                             {{ order.shipment.tracking_number }}</a></p>
-                                        </a></p>
                                     </div>
                                 </div>
                             </div>

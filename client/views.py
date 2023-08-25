@@ -276,16 +276,18 @@ def pay_view(request, order_id):
 
     order = get_object_or_404(Order, id=order_id, user=request.user)
     # todo: 检查订单状态，并执行相应跳转
-    order.update()
-    response = send_request("/pay/", "GET", {"id": order.id, "mode": "pay"})
-    try:
-        response.raise_for_status()
-    except HTTPError as e:
-        logging.warning(f"Error: {e} - {response.json()}")
-        return HttpResponseBadRequest(response)
+    if order.status in ["CREATED"]:
+        response = send_request("/pay/", "GET", {"id": order.id, "mode": "pay"})
+        try:
+            response.raise_for_status()
+        except HTTPError as e:
+            logging.warning(f"Error: {e} - {response.json()}")
+            return HttpResponseBadRequest(response)
+        else:
+            param.update(response.json())
+        return render(request, 'client/payment.html', param)
     else:
-        param.update(response.json())
-    return render(request, 'client/payment.html', param)
+        return redirect("client:order", order_id=order_id)
 
 
 @login_required(login_url="client:login")
