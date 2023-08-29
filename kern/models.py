@@ -434,7 +434,8 @@ class Wallet(RemoteModel):
     URL = "wallet"
 
     id = None
-    customer = models.ForeignKey(verbose_name="客户", on_delete=models.CASCADE, to="User", primary_key=True)
+    customer = models.OneToOneField(verbose_name="客户", on_delete=models.CASCADE, to="User", primary_key=True,
+                                    related_name="wallet")
 
     @property
     def available_balance(self):
