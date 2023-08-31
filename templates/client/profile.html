@@ -43,6 +43,76 @@
                         <!-- Tab panes -->
                         <div class="tab-content dashboard_content">
                             <div class="tab-pane fade show active" id="info">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="row mb-2">
+                                                    <div class="col mt-0">
+                                                        <h5 class="card-title">{% trans "钱包" %}</h5>
+                                                    </div>
+
+                                                    <div class="col-auto">
+                                                        <i class="fa-solid fa-wallet"></i>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <span class="mt-1 mb-3 h1">{{ wallet.available_balance }}</span>
+                                                    USDT<small class="ps-1">TRC20</small>
+                                                </div>
+                                                {% if wallet.is_withdrawable %}
+                                                    <div class="d-block float-end text-success">
+                                                        <i class="fa-solid fa-check"></i> {% trans "申请提现" %}
+                                                    </div>
+                                                {% else %}
+                                                    <div class="d-block float-end text-danger">
+                                                        <i class="fa-solid fa-xmark"></i> {% trans "未达到提现标准" %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item">{% trans "绑定资金" %}: {{ wallet.bind_balance }}</li>
+                                                <li class="list-group-item">{% trans "冻结资金" %}: {{ wallet.frozen_balance }}</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    {% if not point.exchanged %}
+                                        <div class="col-md-6">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="row mb-2">
+                                                        <div class="col mt-0">
+                                                            <h5 class="card-title">{% trans "积分" %}</h5>
+                                                        </div>
+
+                                                        <div class="col-auto">
+                                                            <i class="fa-solid fa-coins"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <span class="mt-1 mb-3 h1">{{ point.point }}</span>
+                                                    </div>
+                                                    {% if point.is_cashable %}
+                                                        <div class="d-block float-end text-success">
+                                                            <i class="fa-solid fa-check"></i> {% trans "申请兑换" %}
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="d-block float-end text-danger">
+                                                            <i class="fa-solid fa-xmark"></i> {% trans "未达到兑换标准" %}
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                                <ul class="list-group list-group-flush">
+                                                    <li class="list-group-item">{% trans "冻结积分" %}: {{ point.frozen_point }}</li>
+                                                    <li class="list-group-item">
+                                                        {% trans "可兑金额" %}: {{ point.cashable_amount }} USDT <small>TRC20</small>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
                                 <h3 class="card-title mb-4">{% trans "用户信息" %}</h3>
 
                                 <div class="row">
