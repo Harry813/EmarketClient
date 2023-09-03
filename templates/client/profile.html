@@ -61,8 +61,11 @@
                                                     USDT<small class="ps-1">TRC20</small>
                                                 </div>
                                                 {% if wallet.is_withdrawable %}
-                                                    <div class="d-block float-end text-success">
-                                                        <i class="fa-solid fa-check"></i> {% trans "申请提现" %}
+                                                    <div class="d-block float-end">
+                                                        <a id="withdraw-request"
+                                                           class="text-decoration-none text-success">
+                                                            <i class="fa-solid fa-check"></i> {% trans "申请提现" %}
+                                                        </a>
                                                     </div>
                                                 {% else %}
                                                     <div class="d-block float-end text-danger">
@@ -92,9 +95,13 @@
                                                     <div>
                                                         <span class="mt-1 mb-3 h1">{{ point.point }}</span>
                                                     </div>
-                                                    {% if point.is_cashable %}
-                                                        <div class="d-block float-end text-success">
-                                                            <i class="fa-solid fa-check"></i> {% trans "申请兑换" %}
+                                                    {% if point.cashable_amount != 0 %}
+                                                        <div class="d-block float-end">
+                                                            <a id="point-exchange-request"
+                                                               data-cashable-amount="{{ point.cashable_amount }}"
+                                                               class="text-decoration-none text-success">
+                                                                <i class="fa-solid fa-check"></i> {% trans "申请兑换" %}
+                                                            </a>
                                                         </div>
                                                     {% else %}
                                                         <div class="d-block float-end text-danger">
@@ -279,6 +286,55 @@
                 },
                 error: function (res) {
                     notyf.error(res.responseJSON.msg)
+                }
+            })
+        })
+
+        $("#point-exchange-request").click(function (e) {
+            e.preventDefault();
+            let cashable_amount = $(this).data("cashable-amount")
+            Swal.fire({
+                title: "{% trans '积分兑换' %}",
+                html: {% blocktranslate %}"<p>您总共可兑换为<strong>" + cashable_amount
+                    + " USDT</strong></p><p>兑换后的资金将会转入您的绑定资金，是否确认兑换？</p>"{% endblocktranslate %},
+                confirmButtonText: '{% trans "提交" %}',
+                showCancelButton: true,
+                cancelButtonText: '{% trans "取消" %}',
+                focusConfirm: false,
+            }).then((result) => {
+                Swal.close();
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: '{% trans "正在提交" %}',
+                        html: '{% trans "请稍等" %}',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading()
+                        }
+                    });
+                    $.ajax({
+                        url: "{% url 'kern:point_exchange' %}",
+                        type: "POST",
+                        headers: {
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        },
+                        data: {
+                            "amount": cashable_amount
+                        },
+                        success: function (data) {
+                            Swal.close();
+                            console.log(data);
+                            notyf.success(data["msg"]);
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 1500);
+                        },
+                        error: function (data) {
+                            Swal.close();
+                            console.log(data);
+                            notyf.error(data.responseJSON["msg"]);
+                        }
+                    })
                 }
             })
         })

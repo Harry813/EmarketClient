@@ -313,10 +313,14 @@ def profile_view(request):
     }
 
     u = User.objects.get(id=request.user.id)
-    wallet, _ = Wallet.objects.get_or_create(customer=u)
+    wallet, is_created = Wallet.objects.get_or_create(customer=u)
+    point, is_created = Point.objects.get_or_create(customer=u)
+    wallet.update()
+    point.update()
     orders = Order.objects.filter(user=u, )
     param["orders"] = orders
     param["wallet"] = wallet
+    param["point"] = point
     param["invitation_url"] = request.build_absolute_uri(reverse("client:register")) + "?ref=" + u.invitation_code
 
     return render(request, 'client/profile.html', param)
