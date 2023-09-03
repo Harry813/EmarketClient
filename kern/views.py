@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 
 from django.contrib.auth import logout
@@ -18,7 +19,7 @@ from kern.utils.sync import sync
 @api_view(["POST"])
 @permission_classes([HasAPIKey | IsAuthenticated])
 def reset_password(request, format=None):
-    if request.headers.get("Authorization", None):
+    if authorization := request.headers.get("Authorization", None):
         try:
             uid = request.data.get("uid")
             password = request.data.get("password")
@@ -190,3 +191,34 @@ def sysinfo_api(request):
             'db_port': os.getenv("DB_PORT", '3306'),
         }
         return Response(payload, status=HTTP_200_OK)
+
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def point_exchange(request):
+    if request.method == "POST":
+        data = request.data
+        user = User.objects.get(pk=request.user.pk)
+
+        amount = data.get("amount", None)
+        if amount is None:
+            return Response({"msg": _("无效的请求")}, status=HTTP_400_BAD_REQUEST)
+
+        logging.info(amount)
+
+        response = send_request(
+            "/point/exchange/",
+            "POST",
+            {
+                "customer": str(user.id),
+                "amount": amount,
+            },
+        )
+        try:
+            response.raise_for_status()
+        except HTTPError as e:
+            logging.error(e.response.text)
+            return Response({"msg": e.response.text}, status=HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"msg": _("兑换成功")}, status=HTTP_200_OK)
