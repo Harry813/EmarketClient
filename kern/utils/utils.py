@@ -1,4 +1,5 @@
 import os
+import re
 
 from kern.models import CartItem
 
@@ -26,3 +27,13 @@ def get_client_params (request, page_title=None):
             "cart_count": quantity,
         })
     return data
+
+
+def is_valid_trx_address(address):
+    if len(address) != 34:
+        return False
+    if not address.startswith("T"):
+        return False
+    if not re.match("^[a-fA-F0-9]*$", address[2:]):
+        return False
+    return True
