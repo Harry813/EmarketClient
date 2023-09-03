@@ -32,7 +32,7 @@ class RemoteModel(models.Model):
             # todo: 添加日志
             # todo: 添加开发人员警报
             logging.warning(f"Failed to update {self.__class__.__name__} {self.pk}")
-            logging.info(response.text)
+            logging.warning(response.text)
             return None
 
         if response.status_code == 200:
@@ -60,6 +60,7 @@ class RemoteModel(models.Model):
 def generate_invitation_code():
     while True:
         code = "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        # return code
         if not User.objects.filter(invitation_code=code).exists():
             return code
 
@@ -99,6 +100,13 @@ class User(AbstractUser):
     @property
     def short_id(self):
         return str(self.id)[:6]
+
+    def save(self, *args, **kwargs):
+        if self.is_superuser:
+            return
+        super().save(*args, **kwargs)
+        if hasattr(self, "wallet"):
+            Wallet.objects.create(customer=self)
 
     class Meta:
         verbose_name = "客户"
@@ -219,6 +227,10 @@ class ProductVariant(RemoteModel):
     @property
     def original_price(self):
         return Decimal(self.data.get("original_price", 0)).quantize(Decimal("0.00"))
+
+    @property
+    def point(self):
+        return int(self.data.get("point", 0))
 
     @property
     def product(self):
@@ -449,6 +461,10 @@ class Wallet(RemoteModel):
     def bind_balance(self):
         return Decimal(self.data.get("bind_balance", 0)).quantize(Decimal("0.00"))
 
+    @property
+    def is_withdrawable(self):
+        return self.available_balance >= 50
+
 
 class Point(RemoteModel):
     URL = "point"
@@ -458,4 +474,16 @@ class Point(RemoteModel):
 
     @property
     def point(self):
-        return self.data.get("point", 0)
+        return int(self.data.get("point", 0))
+
+    @property
+    def frozen_point(self):
+        return int(self.data.get("frozen_point", 0))
+
+    @property
+    def exchanged(self):
+        return self.data.get("exchanged", False)
+
+    @property
+    def cashable_amount(self):
+        return Decimal(self.data.get("cashable_amount", 0)).quantize(Decimal("0.00"))
