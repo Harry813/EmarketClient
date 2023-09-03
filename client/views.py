@@ -275,6 +275,7 @@ def pay_view(request, order_id):
     }
 
     order = get_object_or_404(Order, id=order_id, user=request.user)
+    order.update()
     # todo: 检查订单状态，并执行相应跳转
     if order.status in ["CREATED"]:
         response = send_request("/pay/", "GET", {"id": order.id, "mode": "pay"})
@@ -287,6 +288,7 @@ def pay_view(request, order_id):
             param.update(response.json())
         return render(request, 'client/payment.html', param)
     else:
+        logging.info(order.status)
         return redirect("client:order", order_id=order_id)
 
 
