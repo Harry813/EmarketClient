@@ -10,6 +10,7 @@ in_site_api = [
     path('cart/checkout/', views.checkout_api, name='checkout'),
     path("user/resetpaswd/", views.reset_password, name="reset_password"),
     path("point/exchange/", views.point_exchange, name="point_exchange"),
+    path("withdraw/", views.withdraw_api, name="withdraw"),
 ]
 
 out_site_api = [
