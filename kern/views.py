@@ -13,6 +13,7 @@ from rest_framework_api_key.permissions import HasAPIKey
 
 from kern.models import *
 from kern.utils.sync import sync
+from kern.utils.utils import is_valid_trx_address
 
 
 @csrf_exempt
@@ -222,3 +223,43 @@ def point_exchange(request):
             return Response({"msg": e.response.text}, status=HTTP_400_BAD_REQUEST)
         else:
             return Response({"msg": _("兑换成功")}, status=HTTP_200_OK)
+
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def withdraw_api(request):
+    if request.method == "POST":
+        user = User.objects.get(pk=request.user.pk)
+        user.wallet.update()
+
+        data = request.data
+        amount = data.get("amount", None)
+        if amount is None or amount == "":
+            return Response({"msg": _("Missing amount")}, status=HTTP_400_BAD_REQUEST)
+        else:
+            amount = Decimal(amount)
+            if amount <= 0 or amount > user.wallet.available_balance:
+                return Response({"msg": _("Invalid amount")}, status=HTTP_400_BAD_REQUEST)
+
+        address = data.get("address", None)
+        if address is None or address == "":
+            return Response({"msg": _("Missing address")}, status=HTTP_400_BAD_REQUEST)
+        else:
+            if not is_valid_trx_address(address):
+                return Response({"msg": _("Invalid address")}, status=HTTP_400_BAD_REQUEST)
+
+        payload = {
+            "customer": str(user.id),
+            "amount": amount,
+            "address": address,
+        }
+        response = send_request("/withdraw/", "POST", payload)
+
+        try:
+            response.raise_for_status()
+        except HTTPError as e:
+            logging.error(e.response.text)
+            return Response({"msg": e.response.text}, status=HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"msg": _("Withdraw request sent")}, status=HTTP_200_OK)
