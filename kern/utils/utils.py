@@ -34,6 +34,6 @@ def is_valid_trx_address(address):
         return False
     if not address.startswith("T"):
         return False
-    if not re.match("^[a-fA-F0-9]*$", address[2:]):
+    if not re.match("^[a-zA-Z0-9]*$", address[2:]):
         return False
     return True
