@@ -63,6 +63,7 @@
                                                 {% if wallet.is_withdrawable %}
                                                     <div class="d-block float-end">
                                                         <a id="withdraw-request"
+                                                           data-amount="{{ wallet.available_balance }}"
                                                            class="text-decoration-none text-success">
                                                             <i class="fa-solid fa-check"></i> {% trans "申请提现" %}
                                                         </a>
@@ -231,7 +232,6 @@
                 </div>
             </div>
         </div>
-        </div>
     </section>
 {% endblock %}
 
@@ -328,6 +328,59 @@
                             setTimeout(function () {
                                 window.location.reload();
                             }, 1500);
+                        },
+                        error: function (data) {
+                            Swal.close();
+                            console.log(data);
+                            notyf.error(data.responseJSON["msg"]);
+                        }
+                    })
+                }
+            })
+        })
+
+        $("#withdraw-request").click(function (e) {
+            e.preventDefault();
+            Swal.fire({
+                title: "{% trans '提现申请' %}",
+                html:
+                    '<form id="withdraw_form"><input type="number" class="form-control mb-3" id="withdraw_amount" step="0.01" min="0" ' +
+                    'max="{{ wallet.available_balance }}" placeholder="{% trans "提现金额" %}">' +
+                    '<input type="text" class="form-control mb-3" id="withdraw_address"' +
+                    ' placeholder="{% translate '提现地址' %}"></form>',
+                confirmButtonText: '{% trans "提交" %}',
+                showCancelButton: true,
+                cancelButtonText: '{% trans "取消" %}',
+                focusConfirm: false,
+            }).then((result) => {
+                Swal.close();
+                if (result.isConfirmed) {
+                    //检查输入
+                    let amount = $("#withdraw_amount").val();
+                    let address = $("#withdraw_address").val();
+
+                    Swal.fire({
+                        title: '{% trans "正在提交" %}',
+                        html: '{% trans "请稍等" %}',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading()
+                        }
+                    });
+                    $.ajax({
+                        url: "{% url 'kern:withdraw' %}",
+                        type: "POST",
+                        headers: {
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        },
+                        data: {
+                            "amount": amount,
+                            "address": address
+                        },
+                        success: function (data) {
+                            Swal.close();
+                            console.log(data);
+                            notyf.success(data);
                         },
                         error: function (data) {
                             Swal.close();
