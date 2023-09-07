@@ -362,6 +362,9 @@ class Order(RemoteModel):
     def shipment(self):
         return self.data.get("shipment", {})
 
+    def get_carrier_display(self):
+        return dict(self.CARRIER).get(self.carrier, self.carrier)
+
     @property
     def carrier(self):
         if self.shipment:
